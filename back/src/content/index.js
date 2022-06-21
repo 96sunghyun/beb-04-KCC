@@ -1,10 +1,14 @@
-const Express = require("express");
+import Express from "express";
+import * as contentCtrl from "./content.ctrl";
 const content = Express.Router();
-const contentCtrl = require("./content.ctrl");
 
 content.route("/").post(contentCtrl.write);
-content.route("/:contentId").get(contentCtrl.read);
-content.route("/:contentId").delete(contentCtrl.remove);
-content.route("/:contentId").patch(contentCtrl.update);
+content.route("/:contentId").get(contentCtrl.checkObjectId, contentCtrl.read);
+content
+  .route("/:contentId")
+  .delete(contentCtrl.checkObjectId, contentCtrl.remove);
+content
+  .route("/:contentId")
+  .patch(contentCtrl.checkObjectId, contentCtrl.update);
 
-module.exports = content;
+export default content;
