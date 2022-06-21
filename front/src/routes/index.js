@@ -1,7 +1,7 @@
 import { useRoutes } from 'react-router-dom';
 
 import Main from "../pages/Main"
-import Details from "../pages/Details"
+import Post from "../pages/Post"
 import Login from "../pages/Login"
 import Signup from "../pages/Signup"
 import Write from "../pages/Write"
@@ -32,8 +32,8 @@ export default function Router() {
         },
         // useLocation으로 세부 postId 파악하기
         {
-            path: '/details',
-            element: <Details />
+            path: '/post/:postId',
+            element: <Post />
         }
     ])
 }

@@ -27,6 +27,7 @@ export default function Details() {
                     <PostPreview
                         title={d.title}
                         creator={d.creator}
+                        postId={d.postId}
                         key={[d.title, d.creator, d.postId].join("|")}
                     />)
             }
