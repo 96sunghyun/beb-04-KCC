@@ -32,13 +32,13 @@ app.route("/").get(async (req, res) => {
   }
 });
 
-// 회원가입 페이지
+// 회원가입, 로그인, 로그아웃, 로그인상태확인 기능 경로
 app.use("/auth", auth);
 
-// 마이페이지
+// 마이페이지 경로
 app.use("/mypage", mypage);
 
-// 컨텐츠 CRUD routing
+// 컨텐츠 CRUD 경로
 app.use("/content", content);
 
 app.listen(port, () => {
