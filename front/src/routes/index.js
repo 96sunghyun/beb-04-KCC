@@ -1,0 +1,39 @@
+import { useRoutes } from 'react-router-dom';
+
+import Main from "../pages/Main"
+import Details from "../pages/Details"
+import Login from "../pages/Login"
+import Signup from "../pages/Signup"
+import Write from "../pages/Write"
+import Mypage from "../pages/Mypage"
+
+export default function Router() {
+    return useRoutes([
+        // Main Routes
+        {
+            path: '/',
+            element: <Main />
+        },
+        {
+            path: '/login',
+            element: <Login />
+        },
+        {
+            path: '/signup',
+            element: <Signup />
+        },
+        {
+            path: '/write',
+            element: <Write />
+        },
+        {
+            path: '/mypage',
+            element: <Mypage />
+        },
+        // useLocation으로 세부 postId 파악하기
+        {
+            path: '/details',
+            element: <Details />
+        }
+    ])
+}
