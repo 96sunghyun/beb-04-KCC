@@ -70,7 +70,7 @@ export const login = async (req, res) => {
       httpOnly: true,
     })
     .status(200)
-    .json({ loginSuccess: true, userId: user._id });
+    .send("Login success");
 };
 
 export const check = async (req, res) => {

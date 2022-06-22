@@ -23,7 +23,6 @@ const userSchema = mongoose.Schema({
 
 // pre 함수를 선언해주었기때문에 save()메소드가 실행되면 그 전에 pre함수가 실행되고 save된다.
 userSchema.pre("save", function (next) {
-  console.log("pre start");
   // model에 주어진 객체 그 자체가 this가 된다.
   // 그러므로 아래 user에는 req.body가 담겨있다고 볼 수 있다.
   const user = this;

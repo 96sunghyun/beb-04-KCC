@@ -48,7 +48,6 @@ export const write = async (req, res) => {
   });
   // db에 post 객체를 저장하는 과정
   try {
-    console.log(post);
     await post.save();
     res.send(post);
   } catch (error) {
@@ -82,6 +81,7 @@ export const remove = async (req, res) => {
 };
 
 export const update = async (req, res) => {
+  // console.log("patch");
   // update 시에도 inputType에 대한 검증이 필요하다.
   // 다만 require를 제외한 검증문을 만든다.
   const schema = Joi.object().keys({
@@ -107,8 +107,9 @@ export const update = async (req, res) => {
 };
 
 export const checkOwnPost = (req, res, next) => {
+  // console.log("patch");
   if (req.state.id !== req.state.post.user.id.toString()) {
-    return res.status(403);
+    return res.status(403).send({ error: "Invalid user" });
   }
   // console.log("it is work");
   return next();
