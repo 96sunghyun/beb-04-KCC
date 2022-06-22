@@ -4,13 +4,19 @@ import mongoose from "mongoose";
 import Joi, { string } from "../../node_modules/joi/lib/index";
 
 const { ObjectId } = mongoose.Types;
-export const checkObjectId = (req, res, next) => {
+export const getPostById = async (req, res, next) => {
   // 파라미터로 받은 contentId가 올바른 형식인지 검증하는 함수
   // 파라미터로 contentId를 받는 모든 요청에 적용된다.
-  const { id } = req.params;
-  if (!ObjectId.isValid(id)) {
+  const { contentId } = req.params;
+  console.log(contentId);
+  if (!ObjectId.isValid(contentId)) {
     res.status(400).send({ error: "Invalid Content Id" });
   }
+  const post = await Post.findById(contentId);
+  if (!post) return res.status(404);
+
+  req.state.post = post;
+
   return next();
 };
 
@@ -34,6 +40,11 @@ export const write = async (req, res) => {
   const post = new Post({
     title,
     body,
+    // post 객체에 user 정보 포함
+    user: {
+      id: req.state.id,
+      email: req.state.email,
+    },
   });
   // db에 post 객체를 저장하는 과정
   try {
@@ -49,6 +60,7 @@ export const write = async (req, res) => {
 export const read = async (req, res) => {
   // contentId를 가지고 해당하는 컨텐츠의 detail을 return하는 함수
   const { contentId } = req.params;
+  console.log(contentId);
   try {
     const content = await Post.findById(contentId).exec();
     res.json(content);
@@ -92,4 +104,12 @@ export const update = async (req, res) => {
   } catch (error) {
     res.status(500).send({ error });
   }
+};
+
+export const checkOwnPost = (req, res, next) => {
+  if (req.state.id !== req.state.post.user.id.toString()) {
+    return res.status(403);
+  }
+  // console.log("it is work");
+  return next();
 };
