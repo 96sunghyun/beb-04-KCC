@@ -54,9 +54,3 @@ app.use("/ethFaucet", ethFaucet);
 app.listen(port, () => {
   console.log(`port 4000 opened...`);
 });
-
-// 쿼리문 예시
-// app.route(`/posts`).get((req, res) => {
-//   const { id } = req.query;
-//   res.send(id ? `포스트 #${id}` : "포스트 아이디가 없습니다.");
-// });

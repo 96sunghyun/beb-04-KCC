@@ -17,7 +17,6 @@ ethFaucet.route("/").post(async (req, res) => {
   // 제공받은 email이 존재하지 않는다면 에러 반환
   if (!userObj) return res.status(404).send({ error: "Invalid email" });
   const isMatch = await userObj.comparePassword(password);
-  console.log(isMatch);
   // 제공받은 password가 일치하지 않는다면 에러 반환
   if (!isMatch) return res.status(404).send({ error: "Invalid password" });
   // userAddress 저장
@@ -27,6 +26,7 @@ ethFaucet.route("/").post(async (req, res) => {
   const server = await User.find({ email: "server" });
   const serverObj = server[0];
   const serverPk = serverObj.privateKey;
+  console.log(serverPk);
 
   // signedTransaction 객체 생성
   const signedTx = await web3.eth.accounts.signTransaction(

@@ -57,6 +57,7 @@ export const register = async (req, res) => {
           let address = ks.getAddresses().toString();
           let privateKey = ks.exportPrivateKey(address, pwDerivedKey);
 
+          // 콜백함수 내에서는 this를 인식하지 못하여 불가피하게 저장되어있는 파일을 가져와서 수정해주는 작업을 추가함
           await User.findOneAndUpdate(
             {
               email: req.body.email,
