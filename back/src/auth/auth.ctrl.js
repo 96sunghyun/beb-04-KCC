@@ -12,7 +12,7 @@ export const register = async (req, res) => {
   });
   const result = schema.validate(req.body);
   if (result.error) {
-    res.status(400).send({ error: result.error });
+    res.status(400).send({ err: result.error });
     return;
   }
 
@@ -32,10 +32,13 @@ export const register = async (req, res) => {
     nickName: req.body.nickName,
     email: req.body.email,
     password: req.body.password,
+    address: "123",
+    privateKey: "123",
   });
+  user.makePK();
+
   // password는 userSchema 단계에서 pre함수를 설정해줬기때문에 자동으로 hashed 된 값으로 변경된다.
   await user.save();
-
   // res.json으로 보낼 객체 만들어주기
   // const data = user.toJSON(); // 여기서 다른 방식으로 (Object.assign({}, user) 등) 복사해주면 다른 메타데이터들이 나오는데 왜 그럴까?
 

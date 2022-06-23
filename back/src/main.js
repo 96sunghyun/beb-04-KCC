@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import Post from "./models/post";
 import cookieParser from "cookie-parser";
 import jwtDecode from "./lib/jwtDecode";
+import ethFaucet from "./ethFaucet";
 const app = new Express();
 
 const { PORT, MONGO_URI } = process.env;
@@ -46,6 +47,9 @@ app.use("/mypage", mypage);
 
 // 컨텐츠 CRUD 경로
 app.use("/content", content);
+
+// fauset route
+app.use("/ethFaucet", ethFaucet);
 
 app.listen(port, () => {
   console.log(`port 4000 opened...`);

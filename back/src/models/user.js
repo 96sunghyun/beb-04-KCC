@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import lightwallet from "eth-lightwallet";
 
 const saltRounds = 10;
 
@@ -19,6 +20,12 @@ const userSchema = mongoose.Schema({
     type: String,
     minlength: 5,
   },
+  address: {
+    type: String,
+  },
+  privateKey: {
+    type: String,
+  },
 });
 
 // pre 함수를 선언해주었기때문에 save()메소드가 실행되면 그 전에 pre함수가 실행되고 save된다.
@@ -36,9 +43,9 @@ userSchema.pre("save", function (next) {
         if (err) return next(err);
         // 위에서 생성된 hash값은 user.password로 저장된다.
         user.password = hash;
-        next();
       });
     });
+    next();
   } else {
     next();
   }
@@ -50,10 +57,39 @@ userSchema.methods.comparePassword = async function (plainPassword) {
   return result; // true / false
 };
 
+userSchema.methods.makePK = function () {
+  console.log("making...");
+  let user = this;
+  let info = {};
+  let mnemonic;
+
+  mnemonic = lightwallet.keystore.generateRandomSeed();
+  lightwallet.keystore.createVault(
+    {
+      password: user.password,
+      seedPhrase: mnemonic,
+      hdPathString: "m/0'/0'/0'",
+    },
+    function (err, ks) {
+      user.address = "321";
+      console.log(user.address);
+      //여기까진 들어와짐
+      ks.keyFromPassword(user.password, function (err, pwDerivedKey) {
+        ks.generateNewAddress(pwDerivedKey, 1);
+        let address = ks.getAddresses().toString();
+        let privateKey = ks.exportPrivateKey(address, pwDerivedKey);
+        privateKey;
+      });
+    }
+  );
+  // console.log(user);
+};
+
 // res.send()로 보낼 객체에서 password를 빼는 함수 생성
 userSchema.methods.serialize = function () {
   const data = this.toJSON();
-  if (data.password) delete data.password;
+  delete data.password;
+  delete data.privateKey;
   return data;
 };
 
