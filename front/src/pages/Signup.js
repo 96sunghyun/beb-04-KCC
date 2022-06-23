@@ -8,7 +8,7 @@ import Message from "../components/Message";
 
 import { useEffect, useState } from "react";
 
-const DEFAULT_BUTTON_TEXT = "Input Data First";
+const DEFAULT_BUTTON_TEXT = "Type Data";
 
 export default function Signup() {
 
@@ -42,13 +42,13 @@ export default function Signup() {
             <Navbar backButton={true} />
             <WrapperBody>
                 <div className="flex flex-col items-center space-y-6 w-full my-4">
-                    <div className="flex flex-col space-y-2 w-1/2 m-auto justify-center items-end">
+                    <div className="flex flex-col space-y-2 justify-center items-center">
                         <Input inputName="Name" value={name} onChange={setName} />
                         <Input inputName="ID" value={id} onChange={setId} />
                         <Input inputName="PW" value={pw} onChange={setPw} />
                     </div>
                     <Button name={buttonText} isSubmit={true} onSubmit={onSubmit} disabled={disabled} />
-                    { fail ? <Message /> : null }
+                    { fail ? <Message m="Signup failed." /> : null }
                 </div>
             </WrapperBody>
             <Footer />
