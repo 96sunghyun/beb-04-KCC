@@ -1,6 +1,6 @@
 require("dotenv").config();
 import Joi, { object } from "../../node_modules/joi/lib/index";
-import User from "../models/user";
+import User from "../models/User";
 
 export const register = async (req, res) => {
   // 회원가입
