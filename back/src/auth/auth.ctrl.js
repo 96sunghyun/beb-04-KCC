@@ -41,7 +41,6 @@ export const register = async (req, res) => {
   // const data = user.toJSON(); // 여기서 다른 방식으로 (Object.assign({}, user) 등) 복사해주면 다른 메타데이터들이 나오는데 왜 그럴까?
   const makePK = function (reqPassword) {
     console.log("making...");
-
     let mnemonic;
     mnemonic = lightwallet.keystore.generateRandomSeed();
     // 생성된 니모닉코드와 password로 keyStore, address 생성
@@ -68,14 +67,14 @@ export const register = async (req, res) => {
               },
             }
           );
+
+          res.status(200).json({ address });
         });
       }
     );
     // console.log(user);
   };
   makePK(req.body.password);
-
-  res.json(user.serialize());
 };
 
 export const login = async (req, res) => {

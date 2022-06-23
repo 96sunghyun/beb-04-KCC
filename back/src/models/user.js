@@ -53,7 +53,7 @@ userSchema.methods.comparePassword = async function (plainPassword) {
   return result; // true / false
 };
 
-// res.send()로 보낼 객체에서 password를 빼는 함수 생성
+// res.send()로 address만 보내는 함수
 userSchema.methods.serialize = function () {
   const data = this.toJSON();
   delete data.password;
