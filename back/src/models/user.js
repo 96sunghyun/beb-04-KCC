@@ -25,22 +25,14 @@ const userSchema = mongoose.Schema({
 });
 
 // pre 함수를 선언해주었기때문에 save()메소드가 실행되면 그 전에 pre함수가 실행되고 save된다.
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
   // model에 주어진 객체 그 자체가 this가 된다.
-  // 그러므로 아래 user에는 req.body가 담겨있다고 볼 수 있다.
-  const user = this;
   // password라는 key값의 value가 변경되었는지 확인하는 함수, 아이디 생성시에는 항상 true가 된다.(이전 값이 없기 때문에)
-  if (user.isModified("password")) {
+  if (this.isModified("password")) {
     // bcrypt 모듈로 salt값 생성
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-      if (err) return next(err);
-      // 입력받은 password와 salt값을 가지고 hash값을 만든다.
-      bcrypt.hash(user.password, salt, function (err, hash) {
-        if (err) return next(err);
-        // 위에서 생성된 hash값은 user.password로 저장된다.
-        user.password = hash;
-      });
-    });
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(this.password, salt);
+    this.password = hash;
     next();
   } else {
     next();

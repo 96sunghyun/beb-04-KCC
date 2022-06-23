@@ -17,6 +17,7 @@ ethFaucet.route("/").post(async (req, res) => {
   // 제공받은 email이 존재하지 않는다면 에러 반환
   if (!userObj) return res.status(404).send({ error: "Invalid email" });
   const isMatch = await userObj.comparePassword(password);
+  console.log(isMatch);
   // 제공받은 password가 일치하지 않는다면 에러 반환
   if (!isMatch) return res.status(404).send({ error: "Invalid password" });
   // userAddress 저장

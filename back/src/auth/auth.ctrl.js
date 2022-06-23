@@ -39,6 +39,7 @@ export const register = async (req, res) => {
   await user.save();
   // res.json으로 보낼 객체 만들어주기
   // const data = user.toJSON(); // 여기서 다른 방식으로 (Object.assign({}, user) 등) 복사해주면 다른 메타데이터들이 나오는데 왜 그럴까?
+  // console.log(await User.findOne({ email: req.body.email }));
   const makePK = function (reqPassword) {
     console.log("making...");
     let mnemonic;
