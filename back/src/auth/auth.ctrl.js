@@ -1,6 +1,7 @@
 require("dotenv").config();
 import Joi, { object } from "../../node_modules/joi/lib/index";
 import User from "../models/User";
+import lightwallet from "eth-lightwallet";
 
 export const register = async (req, res) => {
   // 회원가입
@@ -32,15 +33,47 @@ export const register = async (req, res) => {
     nickName: req.body.nickName,
     email: req.body.email,
     password: req.body.password,
-    address: "123",
-    privateKey: "123",
   });
-  user.makePK();
 
   // password는 userSchema 단계에서 pre함수를 설정해줬기때문에 자동으로 hashed 된 값으로 변경된다.
   await user.save();
   // res.json으로 보낼 객체 만들어주기
   // const data = user.toJSON(); // 여기서 다른 방식으로 (Object.assign({}, user) 등) 복사해주면 다른 메타데이터들이 나오는데 왜 그럴까?
+  const makePK = function (reqPassword) {
+    console.log("making...");
+
+    let mnemonic;
+    mnemonic = lightwallet.keystore.generateRandomSeed();
+    // 생성된 니모닉코드와 password로 keyStore, address 생성
+    lightwallet.keystore.createVault(
+      {
+        password: reqPassword,
+        seedPhrase: mnemonic,
+        hdPathString: "m/0'/0'/0'",
+      },
+      function async(err, ks) {
+        ks.keyFromPassword(reqPassword, async function (err, pwDerivedKey) {
+          ks.generateNewAddress(pwDerivedKey, 1);
+          let address = ks.getAddresses().toString();
+          let privateKey = ks.exportPrivateKey(address, pwDerivedKey);
+
+          await User.findOneAndUpdate(
+            {
+              email: req.body.email,
+            },
+            {
+              $set: {
+                address: address,
+                privateKey: privateKey,
+              },
+            }
+          );
+        });
+      }
+    );
+    // console.log(user);
+  };
+  makePK(req.body.password);
 
   res.json(user.serialize());
 };

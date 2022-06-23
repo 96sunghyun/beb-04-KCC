@@ -1,35 +1,26 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import lightwallet from "eth-lightwallet";
 
 const saltRounds = 10;
 
 const userSchema = mongoose.Schema({
   // unique 속성을 추가하였더니 같은 값을 넣었을 때 error를 반환하면서 서버가 멈추게 된다.
   // 그러므로 static 함수를 사용하여 중복되는 값을 검사하는 것이 더 나을 것 같다.
-  userName: {
+  nickName: {
     type: String,
-    maxlength: 50,
   },
   email: {
     type: String,
-    trim: true, //공백제거
   },
   password: {
     type: String,
-    minlength: 5,
   },
   address: {
     type: String,
   },
   privateKey: {
     type: String,
-    unique: 1,
-  },
-  keystore: {
-    type: String,
-    unique: 1,
   },
 });
 
@@ -50,26 +41,6 @@ userSchema.pre("save", function (next) {
         user.password = hash;
       });
     });
-    let mnemonic;
-    mnemonic = lightwallet.keystore.generateRandomSeed();
-    // 생성된 니모닉코드와 password로 keyStore, address 생성
-    lightwallet.keystore.createVault(
-      {
-        password: req.body.password,
-        seedPhrase: mnemonic,
-        hdPathString: "m/0'/0'/0'",
-      },
-      function (err, ks) {
-        ks.keyFromPassword(password, function (err, pwDerivedKey) {
-          ks.generateNewAddress(pwDerivedKey, 1);
-
-          let address = ks.getAddresses().toString();
-          let keystore = ks.serialize();
-
-          res.json({ keystore: keystore, address: address });
-        });
-      }
-    );
     next();
   } else {
     next();
@@ -80,34 +51,6 @@ userSchema.pre("save", function (next) {
 userSchema.methods.comparePassword = async function (plainPassword) {
   const result = await bcrypt.compare(plainPassword, this.password);
   return result; // true / false
-};
-
-userSchema.methods.makePK = function () {
-  console.log("making...");
-  let user = this;
-  let info = {};
-  let mnemonic;
-
-  mnemonic = lightwallet.keystore.generateRandomSeed();
-  lightwallet.keystore.createVault(
-    {
-      password: user.password,
-      seedPhrase: mnemonic,
-      hdPathString: "m/0'/0'/0'",
-    },
-    function (err, ks) {
-      user.address = "321";
-      console.log(user.address);
-      //여기까진 들어와짐
-      ks.keyFromPassword(user.password, function (err, pwDerivedKey) {
-        ks.generateNewAddress(pwDerivedKey, 1);
-        let address = ks.getAddresses().toString();
-        let privateKey = ks.exportPrivateKey(address, pwDerivedKey);
-        privateKey;
-      });
-    }
-  );
-  // console.log(user);
 };
 
 // res.send()로 보낼 객체에서 password를 빼는 함수 생성
@@ -132,12 +75,14 @@ userSchema.methods.generateToken = function () {
   return token;
 };
 
-userSchema.statics.findByNickName = function (nickName) {
-  return this.findOne({ nickName });
+userSchema.statics.findByNickName = async function (nickName) {
+  const result = await this.findOne({ nickName });
+  return result;
 };
 
-userSchema.statics.findByEmail = function (email) {
-  return this.findOne({ email });
+userSchema.statics.findByEmail = async function (email) {
+  const result = await this.findOne({ email });
+  return result;
 };
 
 //스키마는 모델로 감싸줘야 함
