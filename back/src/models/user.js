@@ -22,12 +22,6 @@ const userSchema = mongoose.Schema({
   },
   address: {
     type: String,
-<<<<<<< HEAD
-  },
-  privateKey: {
-    type: String,
-=======
-    unique: 1,
   },
   privateKey: {
     type: String,
@@ -36,7 +30,6 @@ const userSchema = mongoose.Schema({
   keystore: {
     type: String,
     unique: 1,
->>>>>>> 3ce75eb0b5c034723dd3628052ca1116b9b4a9b5
   },
 });
 
@@ -57,6 +50,26 @@ userSchema.pre("save", function (next) {
         user.password = hash;
       });
     });
+    let mnemonic;
+    mnemonic = lightwallet.keystore.generateRandomSeed();
+    // 생성된 니모닉코드와 password로 keyStore, address 생성
+    lightwallet.keystore.createVault(
+      {
+        password: req.body.password,
+        seedPhrase: mnemonic,
+        hdPathString: "m/0'/0'/0'",
+      },
+      function (err, ks) {
+        ks.keyFromPassword(password, function (err, pwDerivedKey) {
+          ks.generateNewAddress(pwDerivedKey, 1);
+
+          let address = ks.getAddresses().toString();
+          let keystore = ks.serialize();
+
+          res.json({ keystore: keystore, address: address });
+        });
+      }
+    );
     next();
   } else {
     next();
