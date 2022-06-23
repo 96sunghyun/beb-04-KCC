@@ -7,7 +7,7 @@ const saltRounds = 10;
 const userSchema = mongoose.Schema({
   // unique 속성을 추가하였더니 같은 값을 넣었을 때 error를 반환하면서 서버가 멈추게 된다.
   // 그러므로 static 함수를 사용하여 중복되는 값을 검사하는 것이 더 나을 것 같다.
-  nickName: {
+  userName: {
     type: String,
     maxlength: 50,
   },
@@ -18,6 +18,18 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     minlength: 5,
+  },
+  address: {
+    type: String,
+    unique: 1,
+  },
+  privateKey: {
+    type: String,
+    unique: 1,
+  },
+  keystore: {
+    type: String,
+    unique: 1,
   },
 });
 
