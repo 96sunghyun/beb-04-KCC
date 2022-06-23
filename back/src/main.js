@@ -5,6 +5,8 @@ import content from "./content/index";
 import auth from "./auth/index";
 import mongoose from "mongoose";
 import Post from "./models/post";
+import cookieParser from "cookie-parser";
+import jwtDecode from "./lib/jwtDecode";
 const app = new Express();
 
 const { PORT, MONGO_URI } = process.env;
@@ -20,6 +22,10 @@ mongoose
 app.use(Express.json());
 // post 메소드에서 x-www-form-urlencoded 형식의 body를 읽어오기 위해 필요한 선언!
 app.use(Express.urlencoded({ extended: false }));
+// 원래 cookie는 req.headers.cookie에서 확인할 수 있다. 그러나 cookieParser 모듈을 이용하면 req.cookies에서 확인할 수 있게 된다.
+app.use(cookieParser());
+// req.cookies에 token이 있다면 자동으로 decode 해주는 middleware 추가
+app.use(jwtDecode);
 
 // 메인페이지
 app.route("/").get(async (req, res) => {
