@@ -1,4 +1,4 @@
-// get userAddress => get serverAddress => send ether from serverAddress to userAddress
+// get userAddress => get serverPK => send ether from serverAddress to userAddress
 import Express from "express";
 import Web3 from "web3";
 import User from "./models/user";
@@ -6,6 +6,9 @@ import HDWalletProvider from "../node_modules/@truffle/hdwallet-provider/dist/in
 const ethFaucet = Express.Router();
 
 ethFaucet.route("/").post(async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(404).send("Input your info");
+  }
   // req.body 중 비교해야 할 요소들 구조분해할당
   const { email, password } = req.body;
   // email을 기준으로 계정 찾기
@@ -38,12 +41,15 @@ ethFaucet.route("/").post(async (req, res) => {
       value: web3.utils.toWei("1"),
     })
     .then(async (result) => {
+      let balance = await web3.eth.getBalance(userAddress);
+      balance = web3.utils.fromWei(balance);
+
       return res.status(200).send({
         message: "Faucet Successed",
         data: {
           username: userObj.nickName,
           address: userAddress,
-          balance: await web3.eth.getBalance(userAddress),
+          balance,
           txHash: result.transactionHash,
         },
       });

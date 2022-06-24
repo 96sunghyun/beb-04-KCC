@@ -1,14 +1,16 @@
 import Post from "../models/post";
+import User from "../models/user";
 import mongoose from "mongoose";
 // 전달받은 요청 내용이 기준에 맞는지 검증하는 라이브러리
 import Joi, { string } from "../../node_modules/joi/lib/index";
+import sendToken from "../lib/sendToken";
 
 const { ObjectId } = mongoose.Types;
 export const getPostById = async (req, res, next) => {
   // 파라미터로 받은 contentId가 올바른 형식인지 검증하는 함수
   // 파라미터로 contentId를 받는 모든 요청에 적용된다.
   const { contentId } = req.params;
-  console.log(contentId);
+
   if (!ObjectId.isValid(contentId)) {
     res.status(400).send({ error: "Invalid Content Id" });
   }
@@ -27,7 +29,6 @@ export const write = async (req, res) => {
     title: Joi.string().required(),
     body: Joi.string().required(),
   });
-
   const result = schema.validate(req.body);
   if (result.error) {
     res.status(400).send({ error: result.error });
@@ -35,7 +36,6 @@ export const write = async (req, res) => {
 
   // title과 description을 가지고 새로운 게시물을 저장하는 함수
   const { title, body } = req.body;
-
   // 생성해놓은 Post model 객체를 이용해서 post라는 객체를 생성
   const post = new Post({
     title,
@@ -43,23 +43,40 @@ export const write = async (req, res) => {
     // post 객체에 user 정보 포함
     user: {
       id: req.state.id,
-      email: req.state.email,
+      address: req.state.address,
     },
   });
   // db에 post 객체를 저장하는 과정
   try {
+    const result = await sendToken(req.state.address);
+
+    await User.findOneAndUpdate(
+      {
+        _id: req.state.id,
+      },
+      {
+        $set: {
+          tokenAmount: result.userAmount,
+        },
+      }
+    );
     await post.save();
-    res.send(post);
-  } catch (error) {
     res.status(500);
-    res.send({ error });
-  }
+    res.send({
+      message: "Serving Successed",
+      data: {
+        userId: req.state.id,
+        address: req.state.address,
+        txHash: result.result.transactionHash,
+        tokenBalance: result.userAmount,
+      },
+    });
+  } catch (error) {}
 };
 
 export const read = async (req, res) => {
   // contentId를 가지고 해당하는 컨텐츠의 detail을 return하는 함수
   const { contentId } = req.params;
-  console.log(contentId);
   try {
     const content = await Post.findById(contentId).exec();
     res.json(content);
@@ -73,15 +90,13 @@ export const remove = async (req, res) => {
   const { contentId } = req.params;
   try {
     await Post.findByIdAndRemove(contentId).exec();
-    res.status(204).end();
-    return;
+    return res.send({ status: `Content ${contentId} Remove Success` });
   } catch (error) {
     res.status(500).send({ error });
   }
 };
 
 export const update = async (req, res) => {
-  // console.log("patch");
   // update 시에도 inputType에 대한 검증이 필요하다.
   // 다만 require를 제외한 검증문을 만든다.
   const schema = Joi.object().keys({
@@ -107,10 +122,8 @@ export const update = async (req, res) => {
 };
 
 export const checkOwnPost = (req, res, next) => {
-  // console.log("patch");
   if (req.state.id !== req.state.post.user.id.toString()) {
     return res.status(403).send({ error: "Invalid user" });
   }
-  // console.log("it is work");
   return next();
 };

@@ -8,6 +8,7 @@ import Post from "./models/post";
 import cookieParser from "cookie-parser";
 import jwtDecode from "./lib/jwtDecode";
 import ethFaucet from "./ethFaucet";
+import transfer from "./transferToken/index";
 const app = new Express();
 
 const { PORT, MONGO_URI } = process.env;
@@ -33,7 +34,8 @@ app.route("/").get(async (req, res) => {
   // db에 있는 모든 content 불러오는 함수
   try {
     const posts = await Post.find().sort({ _id: -1 }).exec();
-    res.json(posts);
+    console.log(posts);
+    res.json({ post: posts[0] });
   } catch (error) {
     res.status(500).send({ error });
   }
@@ -50,6 +52,9 @@ app.use("/content", content);
 
 // fauset route
 app.use("/ethFaucet", ethFaucet);
+
+// user의 token 관련 요청 경로
+app.use("/crypto", transfer);
 
 app.listen(port, () => {
   console.log(`port 4000 opened...`);

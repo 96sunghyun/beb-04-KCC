@@ -22,6 +22,9 @@ const userSchema = mongoose.Schema({
   privateKey: {
     type: String,
   },
+  tokenAmount: {
+    type: Number,
+  },
 });
 
 // pre 함수를 선언해주었기때문에 save()메소드가 실행되면 그 전에 pre함수가 실행되고 save된다.
@@ -58,7 +61,7 @@ userSchema.methods.generateToken = function () {
   const user = this;
   //jsonwebtoken을 이용해서 token생상하기
   const token = jwt.sign(
-    { id: user._id, email: user.email },
+    { id: user._id, address: user.address },
     process.env.JWT_SECRET,
     {
       expiresIn: "1d",
