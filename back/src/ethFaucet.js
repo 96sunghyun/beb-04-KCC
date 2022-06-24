@@ -1,11 +1,9 @@
 // get userAddress => get serverAddress => send ether from serverAddress to userAddress
 import Express from "express";
 import Web3 from "web3";
-import mongoose from "mongoose";
 import User from "./models/user";
-import bcrypt from "bcrypt";
+import HDWalletProvider from "../node_modules/@truffle/hdwallet-provider/dist/index";
 const ethFaucet = Express.Router();
-const web3 = new Web3("http://localhost:7545");
 
 ethFaucet.route("/").post(async (req, res) => {
   // req.body 중 비교해야 할 요소들 구조분해할당
@@ -26,35 +24,61 @@ ethFaucet.route("/").post(async (req, res) => {
   const server = await User.find({ email: "server" });
   const serverObj = server[0];
   const serverPk = serverObj.privateKey;
-  console.log(serverPk);
 
-  // signedTransaction 객체 생성
-  const signedTx = await web3.eth.accounts.signTransaction(
-    {
+  const provider = new HDWalletProvider(serverPk, "http://localhost:7545");
+  const web3 = new Web3(provider);
+
+  // const value = web3.utils.toWei("1");
+  await web3.eth
+    .sendTransaction({
+      from: serverObj.address,
       to: userAddress,
       gas: 2000000,
       gasPrice: await web3.eth.getGasPrice(),
       value: web3.utils.toWei("1"),
-    },
-    serverPk
-  );
-
-  // signedTransaction의 rawTransaction을 이용하여 transaction 실행 및 res.send로 결과 반환
-  await web3.eth.sendSignedTransaction(
-    signedTx.rawTransaction,
-    async (error, result) => {
-      if (error) return res.status(500).send({ error });
+    })
+    .then(async (result) => {
       return res.status(200).send({
         message: "Faucet Successed",
         data: {
           username: userObj.nickName,
           address: userAddress,
           balance: await web3.eth.getBalance(userAddress),
-          txHash: result,
+          txHash: result.transactionHash,
         },
       });
-    }
-  );
+    });
+
+  // 원래는 PK를 이용하여 signedTransaction 객체 생성 후, sendSignedTransaction 함수를 이용해서 tx를 보내야하지만
+  // HDWalletProvider를 사용하면 미리 PK를 저장하여 provider를 선언하기 때문에 sendTransaction만 해도 가능하다는 것 확인됨
+
+  // // signedTransaction 객체 생성
+  // const signedTx = await web3.eth.accounts.signTransaction(
+  //   {
+  //     to: userAddress,
+  //     gas: 2000000,
+  //     gasPrice: await web3.eth.getGasPrice(),
+  //     value: web3.utils.toWei("1"),
+  //   },
+  //   serverPk
+  // );
+
+  // // signedTransaction의 rawTransaction을 이용하여 transaction 실행 및 res.send로 결과 반환
+  // await web3.eth.sendSignedTransaction(
+  //   signedTx.rawTransaction,
+  //   async (error, result) => {
+  //     if (error) return res.status(500).send({ error });
+  //     return res.status(200).send({
+  //       message: "Faucet Successed",
+  //       data: {
+  //         username: userObj.nickName,
+  //         address: userAddress,
+  //         balance: await web3.eth.getBalance(userAddress),
+  //         txHash: result,
+  //       },
+  //     });
+  //   }
+  // );
 });
 
 export default ethFaucet;
