@@ -8,7 +8,7 @@ import Post from "./models/post";
 import cookieParser from "cookie-parser";
 import jwtDecode from "./lib/jwtDecode";
 import ethFaucet from "./ethFaucet";
-import transfer from "./transferToken/index";
+import transfer from "./crypto/index";
 const app = new Express();
 
 const { PORT, MONGO_URI } = process.env;
