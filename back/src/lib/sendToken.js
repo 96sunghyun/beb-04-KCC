@@ -1,3 +1,4 @@
+// 기존에 사용했던, 하나의 포스팅마다 하나의 토큰을 보내줬던 방식
 import Web3 from "web3";
 import HDWalletProvider from "../../node_modules/@truffle/hdwallet-provider/dist/index";
 import abi from "../../sol/ERC-20abi";

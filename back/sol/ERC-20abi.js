@@ -253,6 +253,16 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [
+      { internalType: "address[]", name: "toArr", type: "address[]" },
+      { internalType: "uint256[]", name: "amountArr", type: "uint256[]" },
+    ],
+    name: "transferMany",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
     name: "transferOwnership",
     outputs: [],

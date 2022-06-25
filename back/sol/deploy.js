@@ -18,7 +18,7 @@ const deploy = async () => {
     })
     .send({
       from: "0xc706f1c3c222b2c508f86c012aab7c4e99a58bd9",
-      gas: 2000000,
+      gas: 3000000,
       gasPrice,
     });
   console.log(recipient);
