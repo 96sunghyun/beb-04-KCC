@@ -5,29 +5,53 @@ import WrapperBody from "../components/WrapperBody";
 import PostPreview from "../components/PostPreview"
 import Button from "../components/Button";
 
-const dummy = [
-    {
-        title: "Hello new post here",
-        creator: "KCC",
-        postId: "1"
-    },
-    {
-        title: "This is second post",
-        creator: "KCC",
-        postId: "2"
-    },
-    {
-        title: "3rd post herehrher",
-        creator: "KCC",
-        postId: "3"
-    }
-]
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 export default function Mypage() {
 
+    const [alreadyLogged, setAlreadyLogged] = useState(true);
+    const [myPosts, setMyPosts] = useState([]);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (alreadyLogged === false) {
+            console.log("🔴 Rejected from mypage due to login issue");
+            navigate(`/`);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [alreadyLogged])
+
+    useEffect(() => {
+        getMypage();
+    }, [])
+
+    // (로그인) GET http://localhost:4000/mypage
+    axios.defaults.withCredentials = true;
+    const getMypage = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/mypage',
+                {},
+                {
+                    withCredentials: true
+                }
+            );
+            console.log(response);
+
+            if (response.status === 200) {
+                setMyPosts(response.data);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return (
         <WrapperBasic>
-            <Navbar />
+            <Navbar setAlreadyLogged={setAlreadyLogged} />
 
             <div className="flex flex-col items-center w-full mt-10">
                 <h1 className="text-4xl font-bold">My Page</h1>
@@ -40,19 +64,20 @@ export default function Mypage() {
             <WrapperBody>
                 <div className="flex flex-col gap-3 py-6 px-4 w-3/4">
                     {
-                        dummy.map(d =>
+                        myPosts.map(m =>
                             <PostPreview
-                                title={d.title}
-                                creator={d.creator}
-                                postId={d.postId}
-                                key={[d.title, d.creator, d.postId].join("|")}
+                                title={m.title}
+                                creator={m.user.nickName}
+                                postId={m._id}
+                                body={m.body}
+                                key={[m.title, m.user, m._id].join("|")}
                             />)
                     }
                 </div>
 
                 <div className="flex flex-col items-end w-full">
                     <div className="w-1/2 flex justify-center mt-6 -mb-24 space-x-2">
-                        <Button name="Back to list" urlPath="main" />
+                        <Button name="Back to list" urlPath="" />
                         <Button name="New Post" urlPath="write" />
                     </div>
                 </div>

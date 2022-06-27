@@ -26,8 +26,9 @@ export default function Details() {
                 posts && posts.map(p =>
                     <PostPreview
                         title={p.title}
-                        creator={p.user.id}
-                        postId={p.postId}
+                        creator={p.user.nickName}
+                        postId={p._id}
+                        body={p.body}
                         key={[p.title, p.user, p._id].join("|")}
                     />)
             }

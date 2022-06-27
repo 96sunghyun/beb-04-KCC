@@ -18,6 +18,8 @@ export default function Login() {
     // Signup POST failed?
     const [fail, setFail] = useState(false);
 
+    const [alreadyLogged, setAlreadyLogged] = useState(false);
+
     const [buttonText, setButtonText] = useState(DEFAULT_BUTTON_TEXT)
     const [disabled, setDisabled] = useState(true);
 
@@ -42,6 +44,12 @@ export default function Login() {
         postLogin(id, pw);
     }
 
+    // 이미 로그인 상태라면 마이페이지로 자동 이동
+    useEffect(() => {
+        if (alreadyLogged === true) navigate(`/mypage`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [alreadyLogged]);
+
     // (로그인) POST http://localhost:4000/auth/login
     axios.defaults.withCredentials = true;
     const postLogin = async (id, pw) => {
@@ -57,14 +65,14 @@ export default function Login() {
         console.log(response);
 
         if (response.status === 200) {
-            window.alert('Login Success!');
+            // window.alert('Login Success!');
             navigate(`/mypage`);
         }
     }
 
     return (
         <WrapperBasic>
-            <Navbar backButton={true} />
+            <Navbar setAlreadyLogged={setAlreadyLogged} />
             <WrapperBody>
                 <div className="flex flex-col items-center space-y-6 w-full my-4">
                     <div className="flex flex-col space-y-2 justify-center items-center">
