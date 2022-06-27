@@ -13,7 +13,6 @@ export default function Details() {
         });
         const data = response.data;
         console.log(data.post);
-        console.log(data.post.user);
         setPosts(data.post)
     }
 
@@ -24,13 +23,13 @@ export default function Details() {
     return (
         <div className="flex flex-col gap-3 py-6 px-4 w-full">
             {
-                // posts && posts.map(p =>
-                //     <PostPreview
-                //         title={p.title}
-                //         creator={p.user}
-                //         postId={p.postId}
-                //         key={[p.title, p.user, p._id].join("|")}
-                //     />)
+                posts && posts.map(p =>
+                    <PostPreview
+                        title={p.title}
+                        creator={p.user.id}
+                        postId={p.postId}
+                        key={[p.title, p.user, p._id].join("|")}
+                    />)
             }
         </div>
     )

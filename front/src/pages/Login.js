@@ -9,6 +9,7 @@ import Message from "../components/Message";
 import axios from "axios"
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const DEFAULT_BUTTON_TEXT = "Input ID/PW";
 
@@ -22,6 +23,8 @@ export default function Login() {
 
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (id && pw) {
@@ -44,17 +47,19 @@ export default function Login() {
     const postLogin = async (id, pw) => {
         const response = await axios.post('http://localhost:4000/auth/login',
             {
-                params: {
-                    nickname: id,
-                    email: id,
-                    password: pw
-                }
+                email: id,
+                password: pw
             },
             {
                 withCredentials: true
             }
         );
         console.log(response);
+
+        if (response.status === 200) {
+            window.alert('Login Success!');
+            navigate(`/mypage`);
+        }
     }
 
     return (
