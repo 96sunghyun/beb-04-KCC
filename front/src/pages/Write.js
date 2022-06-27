@@ -5,9 +5,12 @@ import WrapperBasic from "../components/WrapperBasic";
 import WrapperBody from "../components/WrapperBody";
 import Button from "../components/Button";
 
-import { useState } from "react";
+import axios from "axios"
 
-const DEFAULT_BUTTON_TEXT = "POST";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const DEFAULT_BUTTON_TEXT = "Write 50+ letters...";
 
 export default function Write() {
 
@@ -19,9 +22,42 @@ export default function Write() {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (title && body.length >= 50) {
+            setDisabled(false);
+            setButtonText("POST");
+        } else {
+            setDisabled(true);
+            setButtonText(DEFAULT_BUTTON_TEXT);
+        }
+    }, [title, body])
+
     const onSubmit = (e) => {
         e.preventDefault();
         console.log(title, body);
+        postContent(title, body);
+    }
+
+    // (신규 포스팅) POST http://localhost:4000/content
+    axios.defaults.withCredentials = true;
+    const postContent = async (title, body) => {
+        const response = await axios.post('http://localhost:4000/content',
+            {
+                title,
+                body
+            },
+            {
+                withCredentials: true
+            }
+        );
+        console.log(response);
+
+        if (response.status === 200) {
+            window.alert('New Post Success!');
+            navigate(`/mypage`);
+        }
     }
 
     return (
