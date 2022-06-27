@@ -1,35 +1,36 @@
+import { useEffect, useState } from "react"
+import axios from "axios"
 import PostPreview from "../components/PostPreview"
 
-const dummy = [
-    {
-        title: "Hello new post here",
-        creator: "KCC",
-        postId: "1"
-    },
-    {
-        title: "This is second post",
-        creator: "KCC",
-        postId: "2"
-    },
-    {
-        title: "3rd post herehrher",
-        creator: "KCC",
-        postId: "3"
-    }
-]
-
 export default function Details() {
+
+    const [posts, setPosts] = useState(null);
+
+    // 전체 Post 가져오기
+    const getDetails = async () => {
+        const response = await axios.get('http://localhost:4000/', {}, {
+            withCredentials: true
+        });
+        const data = response.data;
+        console.log(data.post);
+        console.log(data.post.user);
+        setPosts(data.post)
+    }
+
+    useEffect(()=>{
+        getDetails();
+    }, [])
 
     return (
         <div className="flex flex-col gap-3 py-6 px-4 w-full">
             {
-                dummy.map(d =>
-                    <PostPreview
-                        title={d.title}
-                        creator={d.creator}
-                        postId={d.postId}
-                        key={[d.title, d.creator, d.postId].join("|")}
-                    />)
+                // posts && posts.map(p =>
+                //     <PostPreview
+                //         title={p.title}
+                //         creator={p.user}
+                //         postId={p.postId}
+                //         key={[p.title, p.user, p._id].join("|")}
+                //     />)
             }
         </div>
     )

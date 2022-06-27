@@ -6,6 +6,8 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Message from "../components/Message";
 
+import axios from "axios"
+
 import { useEffect, useState } from "react";
 
 const DEFAULT_BUTTON_TEXT = "Input ID/PW";
@@ -34,6 +36,25 @@ export default function Login() {
     const onSubmit = (e) => {
         e.preventDefault();
         console.log(id, pw);
+        postLogin(id, pw);
+    }
+
+    // (로그인) POST http://localhost:4000/auth/login
+    axios.defaults.withCredentials = true;
+    const postLogin = async (id, pw) => {
+        const response = await axios.post('http://localhost:4000/auth/login',
+            {
+                params: {
+                    nickname: id,
+                    email: id,
+                    password: pw
+                }
+            },
+            {
+                withCredentials: true
+            }
+        );
+        console.log(response);
     }
 
     return (

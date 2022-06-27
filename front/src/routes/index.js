@@ -3,7 +3,7 @@ import { useRoutes } from 'react-router-dom';
 import Main from "../pages/Main"
 import Post from "../pages/Post"
 import Login from "../pages/Login"
-import Signup from "../pages/Signup"
+// import Signup from "../pages/Signup"
 import Write from "../pages/Write"
 import Mypage from "../pages/Mypage"
 
@@ -18,10 +18,10 @@ export default function Router() {
             path: '/login',
             element: <Login />
         },
-        {
-            path: '/signup',
-            element: <Signup />
-        },
+        // {
+        //     path: '/signup',
+        //     element: <Signup />
+        // },
         {
             path: '/write',
             element: <Write />
