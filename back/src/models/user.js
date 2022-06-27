@@ -25,6 +25,7 @@ const userSchema = mongoose.Schema({
   tokenAmount: {
     type: Number,
   },
+  NFTList: [Number],
   addrList: [String],
 });
 

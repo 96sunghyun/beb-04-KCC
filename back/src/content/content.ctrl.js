@@ -76,7 +76,7 @@ export const write = async (req, res) => {
       sendTokens(server.addrList);
     }
     await post.save();
-    res.status(500);
+    res.status(200);
     res.send({
       message: "Serving Successed",
       postId: post._id,

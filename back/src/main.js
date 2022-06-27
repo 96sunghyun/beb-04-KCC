@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import jwtDecode from "./lib/jwtDecode";
 import ethFaucet from "./ethFaucet";
 import transfer from "./crypto/index";
+
 const app = new Express();
 
 const { PORT, MONGO_URI } = process.env;
@@ -35,7 +36,7 @@ app.route("/").get(async (req, res) => {
   try {
     const posts = await Post.find().sort({ _id: -1 }).exec();
     console.log(posts);
-    res.json({ post: posts[0] });
+    res.json({ posts });
   } catch (error) {
     res.status(500).send({ error });
   }
