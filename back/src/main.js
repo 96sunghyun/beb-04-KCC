@@ -10,6 +10,7 @@ import jwtDecode from "./lib/jwtDecode";
 import ethFaucet from "./ethFaucet";
 import transfer from "./crypto/index";
 import cors from "cors";
+
 const app = new Express();
 
 const { PORT, MONGO_URI } = process.env;

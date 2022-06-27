@@ -25,6 +25,8 @@ const userSchema = mongoose.Schema({
   tokenAmount: {
     type: Number,
   },
+  NFTList: [Number],
+  addrList: [String],
 });
 
 // pre 함수를 선언해주었기때문에 save()메소드가 실행되면 그 전에 pre함수가 실행되고 save된다.

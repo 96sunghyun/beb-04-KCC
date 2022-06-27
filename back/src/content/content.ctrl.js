@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 // 전달받은 요청 내용이 기준에 맞는지 검증하는 라이브러리
 import Joi, { string } from "../../node_modules/joi/lib/index";
 import sendToken from "../lib/sendToken";
+import sendTokens from "../lib/sendTokens";
 
 const { ObjectId } = mongoose.Types;
 export const getPostById = async (req, res, next) => {
@@ -47,29 +48,44 @@ export const write = async (req, res) => {
     },
   });
   // db에 post 객체를 저장하는 과정
+  // 포스트 하나를 보낼 때 토큰 전송 tx를 생성하는 방식에서 포스트 하나를 작성할 때 작성자의 address를 server의 addrList에 넣고
+  // addrList의 length가 10이 되면 한번에 토큰을 전송하는 방식으로 바꿔보자
+  // 아래에서 주석처리 된 부분은 원래 사용했던 방식
   try {
-    const result = await sendToken(req.state.address);
+    // const result = await sendToken(req.state.address);
 
-    await User.findOneAndUpdate(
-      {
-        _id: req.state.id,
-      },
-      {
-        $set: {
-          tokenAmount: result.userAmount,
-        },
-      }
+    // await User.findOneAndUpdate(
+    //   {
+    //     _id: req.state.id,
+    //   },
+    //   {
+    //     $set: {
+    //       tokenAmount: result.userAmount,
+    //     },
+    //   }
+    // );
+    // post 작성자의 address를 addrList에 저장하자.
+    const server = await User.findOneAndUpdate(
+      { email: "server" },
+      { $push: { addrList: req.state.address } },
+      // new를 true로 설정해주면 업데이트 된 이후 값이 나온다. false일 경우 업데이트 이전 값이 나온다.
+      { new: true }
     );
+    // addrList.length가 10이 될 때 토큰 전송 함수 실행
+    if (server.addrList.length === 10) {
+      sendTokens(server.addrList);
+    }
     await post.save();
-    res.status(500);
+    res.status(200);
     res.send({
       message: "Serving Successed",
-      data: {
-        userId: req.state.id,
-        address: req.state.address,
-        txHash: result.result.transactionHash,
-        tokenBalance: result.userAmount,
-      },
+      postId: post._id,
+      // data: {
+      //   userId: req.state.id,
+      //   address: req.state.address,
+      //   txHash: result.result.transactionHash,
+      //   tokenBalance: result.userAmount,
+      // },
     });
   } catch (error) {}
 };

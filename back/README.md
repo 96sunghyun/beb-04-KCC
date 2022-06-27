@@ -27,3 +27,13 @@
 ### 5. http://localhost:4000/auth/register post 요청으로 테스트 유저 생성
 
 ### 6. login path로 로그인 한 후 포스트생성(토큰발급) 토큰 transfer, count, 포스트 삭제 등 기능 테스트(apiDocs 참고)
+
+## 포스트 10개 작성되었을 때 token 발급기능, transfer 기능 등 contract기능 테스트
+
+### 1. ganache 실행
+
+### 2. sol 폴더로 들어가 node deploy 실행
+
+### 3. 생성된 ganache 블록의 contract address를 lib 폴더 sendTokens.js 의 contractAddress 변수에 할당
+
+### 4. 마찬가지로 lib 폴더 transferToken.js의 contractAddress 변수에 할당

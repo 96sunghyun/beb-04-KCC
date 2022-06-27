@@ -167,6 +167,16 @@ contract SimpleToken is ERC20Interface, OwnerHelper {
     return true;
   }
 
+  // address로 이루어진 배열을 받아 각자 할당된 amount만큼 한번에 토큰을 지급하는 함수
+  function transferMany(address[] calldata toArr, uint256[] calldata amountArr)
+    public
+  {
+    for (uint256 i = 0; i < toArr.length; i++) {
+      _transfer(msg.sender, toArr[i], amountArr[i]);
+      emit Transfer(msg.sender, toArr[i], amountArr[i]);
+    }
+  }
+
   function allowance(address owner, address spender)
     external
     view
