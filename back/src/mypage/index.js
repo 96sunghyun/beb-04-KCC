@@ -14,7 +14,7 @@ mypage.route("/").get(async (req, res) => {
     // NFT 이미지파일 전송하기
     const imgFiles = NFTs.map((nft) => Buffer.from(nft.file));
     res.status(200);
-    console.log(res);
+
     return res.send({ list, imgFiles });
     // res.send(list);
   } catch (error) {

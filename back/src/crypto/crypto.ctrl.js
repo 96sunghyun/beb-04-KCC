@@ -8,6 +8,7 @@ import abi from "../../sol/ERC-20abi";
 
 import ERC721_ADDRESS from "../lib/ERC721_ADDRESS";
 import ERC20_ADDRESS from "../lib/ERC20_ADDRESS";
+import nodeAddress from "../lib/nodeAddress";
 
 export const transfer = async (req, res) => {
   if (!req.state) {
@@ -76,10 +77,7 @@ export const buyNFT = async (req, res) => {
     const nft = NFTs[0];
 
     // web3 작업을 위한 설정
-    const provider = new HDWalletProvider(
-      server.privateKey,
-      "http://localhost:7545"
-    );
+    const provider = new HDWalletProvider(server.privateKey, nodeAddress);
     const web3 = new Web3(provider);
 
     const NFTContract = new web3.eth.Contract(NFTabi, ERC721_ADDRESS);
@@ -98,11 +96,20 @@ export const buyNFT = async (req, res) => {
     await nft.updateOne({ tokenId, ownerAddress, owner: true });
     // user 객체 정보 업데이트
     const tokenAmount = await FTContract.methods.balanceOf(user.address).call();
-    await user.updateOne({ $push: { NFTList: tokenId } });
-    await user.updateOne({ tokenAmount: web3.utils.fromWei(tokenAmount) });
+
+    await user.updateOne({
+      tokenAmount: web3.utils.fromWei(tokenAmount),
+      $push: { NFTList: tokenId },
+    });
 
     res.status(200);
-    return res.send("Success!");
+    return res.send({
+      state: "Success",
+      data: {
+        tokenAmount: web3.utils.fromWei(tokenAmount),
+        NFTId: tokenId,
+      },
+    });
   } catch (error) {
     res.status(404);
     return res.send({ error });

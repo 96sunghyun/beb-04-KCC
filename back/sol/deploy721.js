@@ -1,8 +1,9 @@
+const nodeAddress = require("../src/lib/nodeAddress");
 const Web3 = require("web3");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const provider = new HDWalletProvider(
   "0d23715630b4a2d7ac82234bcffa82785c6482853c98c6c84329e66cd69616b6",
-  "http://localhost:7545"
+  nodeAddress
 );
 const web3 = new Web3(provider);
 const abi = require("./ERC-721abi");

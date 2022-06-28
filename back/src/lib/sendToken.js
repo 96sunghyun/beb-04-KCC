@@ -4,14 +4,12 @@ import HDWalletProvider from "../../node_modules/@truffle/hdwallet-provider/dist
 import abi from "../../sol/ERC-20abi";
 import User from "../models/user";
 import ERC20_ADDRESS from "./ERC20_ADDRESS";
+import nodeAddress from "./nodeAddress";
 
 const sendToken = async (userAddr) => {
   const server = await User.findOne({ email: "server" });
 
-  const provider = new HDWalletProvider(
-    server.privateKey,
-    "http://localhost:7545"
-  );
+  const provider = new HDWalletProvider(server.privateKey, nodeAddress);
 
   const web3 = new Web3(provider);
 

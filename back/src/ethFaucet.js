@@ -3,6 +3,7 @@ import Express from "express";
 import Web3 from "web3";
 import User from "./models/user";
 import HDWalletProvider from "../node_modules/@truffle/hdwallet-provider/dist/index";
+import nodeAddress from "./lib/nodeAddress";
 const ethFaucet = Express.Router();
 
 ethFaucet.route("/").post(async (req, res) => {
@@ -28,7 +29,7 @@ ethFaucet.route("/").post(async (req, res) => {
   const serverObj = server[0];
   const serverPk = serverObj.privateKey;
 
-  const provider = new HDWalletProvider(serverPk, "http://localhost:7545");
+  const provider = new HDWalletProvider(serverPk, nodeAddress);
   const web3 = new Web3(provider);
 
   // const value = web3.utils.toWei("1");
