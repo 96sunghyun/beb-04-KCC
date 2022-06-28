@@ -3,6 +3,7 @@ import Web3 from "web3";
 import HDWalletProvider from "../../node_modules/@truffle/hdwallet-provider/dist/index";
 import abi from "../../sol/ERC-20abi";
 import User from "../models/user";
+import ERC20_ADDRESS from "./ERC20_ADDRESS";
 
 const sendToken = async (userAddr) => {
   const server = await User.findOne({ email: "server" });
@@ -14,10 +15,7 @@ const sendToken = async (userAddr) => {
 
   const web3 = new Web3(provider);
 
-  const myContract = new web3.eth.Contract(
-    abi,
-    "0x4824628771a029dbDca23714641EBa0230cb99fE"
-  );
+  const myContract = new web3.eth.Contract(abi, ERC20_ADDRESS);
   const value = web3.utils.toWei("1");
 
   const result = await myContract.methods.transfer(userAddr, value).send({

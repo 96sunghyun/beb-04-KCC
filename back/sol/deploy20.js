@@ -14,7 +14,6 @@ const deploy = async () => {
   const recipient = await myContract
     .deploy({
       data: "0x" + bin,
-      arguments: ["simpleToken", "STK"],
     })
     .send({
       from: "0xc706f1c3c222b2c508f86c012aab7c4e99a58bd9",

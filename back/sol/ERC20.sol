@@ -1,272 +1,53 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.14;
+pragma solidity 0.8.10;
 
-interface ERC20Interface {
-  function totalSupply() external view returns (uint256);
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-  function balanceOf(address account) external view returns (uint256);
+contract ZeppelinTestToken is ERC20, Ownable {
+  constructor() ERC20("ZeppelinTestToken", "ZTT") {}
 
-  function transfer(address recipient, uint256 amount) external returns (bool);
-
-  function approve(address spender, uint256 amount) external returns (bool);
-
-  function allowance(address owner, address spender)
-    external
-    view
-    returns (uint256);
-
-  function transferFrom(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) external returns (bool);
-
-  event Transfer(address indexed from, address indexed to, uint256 amount);
-  event Transfer(
-    address indexed spender,
-    address indexed from,
-    address indexed to,
-    uint256 amount
-  );
-  event Approval(
-    address indexed owner,
-    address indexed spender,
-    uint256 oldAmount,
-    uint256 amount
-  );
-}
-
-library SafeMath {
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a * b;
-    assert(a == 0 || c / a == b);
-    return c;
-  }
-
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a / b;
-    return c;
-  }
-
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b <= a);
-    return a - b;
-  }
-
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
-    assert(c >= a);
-    return c;
-  }
-}
-
-abstract contract OwnerHelper {
-  address private _owner;
-
-  event OwnershipTransferred(
-    address indexed preOwner,
-    address indexed nextOwner
-  );
-
-  modifier onlyOwner() {
-    require(msg.sender == _owner, "OwnerHelper: caller is not owner");
-    _;
-  }
-
-  constructor() {
-    _owner = msg.sender;
-  }
-
-  function owner() public view virtual returns (address) {
-    return _owner;
-  }
-
-  // vote라는 함수를 만들어서 address를 넣고 실행하면 address => uint mapping의 해당 address의 uint가 1 증가한다.
-  // 후보로 나온 address의 value 값에 해당하는 uint가 전체 투표 카운트의 절반이상이면 _owner가 아래 할수를 실행할 수 있도록 require한다.
-  function transferOwnership(address newOwner) public onlyOwner {
-    require(newOwner != _owner);
-    require(newOwner != address(0x0));
-    address preOwner = _owner;
-    _owner = newOwner;
-    emit OwnershipTransferred(preOwner, newOwner);
-  }
-}
-
-contract SimpleToken is ERC20Interface, OwnerHelper {
-  using SafeMath for uint256;
-
-  mapping(address => uint256) private _balances;
-  mapping(address => mapping(address => uint256)) public _allowances;
-  mapping(address => bool) public _personalTokenLock;
-
-  bool public _tokenLock;
-  uint256 public _totalSupply;
-  string public _name;
-  string public _symbol;
-  uint8 public _decimals;
-  uint256 private E18 = 1000000000000000000;
-
-  constructor(string memory getName, string memory getSymbol) {
-    _name = getName;
-    _symbol = getSymbol;
-    _decimals = 18;
-    _totalSupply = 100000000 * E18;
-    _balances[msg.sender] = _totalSupply;
-    _tokenLock = false;
-  }
-
-  function isTokenLock(address from, address to)
+  // 새로 생성한 함수 (이전과 달리 배포시 민팅하는 토큰이 없고, 요건이 충족될때마다 새로 민팅해서 토큰을 지급하는 함수)
+  // NFT 구매를 위해 민팅하는 시점에 approve를 설정하여 transferFrom 함수 실행을 가능하게 한다.
+  function mintTokens(address[] calldata toArr, uint256[] memory amount)
     public
-    view
-    returns (bool lock)
-  {
-    lock = false;
-
-    if (_tokenLock == true) {
-      lock = true;
-    }
-    if (_personalTokenLock[from] == true || _personalTokenLock[to] == true) {
-      lock = true;
-    }
-  }
-
-  function name() public view returns (string memory) {
-    return _name;
-  }
-
-  function symbol() public view returns (string memory) {
-    return _symbol;
-  }
-
-  function decimals() public view returns (uint8) {
-    return _decimals;
-  }
-
-  function totalSupply() external view virtual override returns (uint256) {
-    return _totalSupply;
-  }
-
-  function balanceOf(address account)
-    external
-    view
-    virtual
-    override
-    returns (uint256)
-  {
-    return _balances[account];
-  }
-
-  function transfer(address recipient, uint256 amount)
-    public
-    virtual
-    override
+    onlyOwner
     returns (bool)
-  {
-    _transfer(msg.sender, recipient, amount);
-    emit Transfer(msg.sender, recipient, amount);
-    return true;
-  }
-
-  // address로 이루어진 배열을 받아 각자 할당된 amount만큼 한번에 토큰을 지급하는 함수
-  function transferMany(address[] calldata toArr, uint256[] calldata amountArr)
-    public
   {
     for (uint256 i = 0; i < toArr.length; i++) {
-      _transfer(msg.sender, toArr[i], amountArr[i]);
-      emit Transfer(msg.sender, toArr[i], amountArr[i]);
+      require(toArr[i] != address(0x0));
+      require(amount[i] > 0);
+      _mint(toArr[i], amount[i] * 1e18);
+      _approve(
+        toArr[i],
+        msg.sender,
+        allowance(toArr[i], msg.sender) + amount[i] * 1e18
+      );
     }
-  }
-
-  function allowance(address owner, address spender)
-    external
-    view
-    override
-    returns (uint256)
-  {
-    return _allowances[owner][spender];
-  }
-
-  function approve(address spender, uint256 amount)
-    external
-    virtual
-    override
-    returns (bool)
-  {
-    uint256 currentAllowance = _allowances[msg.sender][spender];
-    // 아래에서 require(_balances[msg.sender] - _allowances[msg.sender][spender] >= amount) 이 되어야하는게 아닌가? (아니면 다른사람들에게도 approve해준 것 까지 합친 총량)
-    // balance와만 비교해서는 다른 어떤 사람에게 approve 권한을 주었는지 알 수 없기 때문이다.
-    require(
-      _balances[msg.sender] >= amount,
-      "ERC20: The amount to be transferred exceeds the amount of tokens held by the owner"
-    );
-    _approve(msg.sender, spender, currentAllowance, amount);
     return true;
   }
 
+  // nft구매를 위해선 transferFrom 함수를 override하여 수정해줘야함
+  // address spender = msg.sender 였는데, 그렇게하면 spender에 ERC-721 함수의 address가 들어가서 spendAllowance 함수에서 오류가 발생한다.
   function transferFrom(
-    address sender,
-    address recipient,
+    address from,
+    address to,
     uint256 amount
-  ) external virtual override returns (bool) {
-    _transfer(sender, recipient, amount);
-    emit Transfer(msg.sender, sender, recipient, amount);
-    uint256 currentAllowance = _allowances[sender][msg.sender];
-    require(
-      currentAllowance >= amount,
-      "ERC20: transfer amount exceeds allowance"
-    );
-    _approve(
-      sender,
-      msg.sender,
-      currentAllowance,
-      currentAllowance.sub(amount)
-    );
+  ) public virtual override returns (bool) {
+    address spender = to;
+    _spendAllowance(from, spender, amount);
+    _transfer(from, to, amount);
     return true;
   }
 
-  function _transfer(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) internal virtual {
-    require(sender != address(0), "ERC20: transfer from the zero address");
-    require(recipient != address(0), "ERC20: transfer from the zero address");
-    require(
-      isTokenLock(sender, recipient) == false,
-      "TokenLock : invalid token transfer"
-    );
-    uint256 senderBalance = _balances[sender];
-    require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
-    _balances[sender] = senderBalance.sub(amount);
-    _balances[recipient] = _balances[recipient].add(amount);
-  }
-
-  function _approve(
-    address owner,
-    address spender,
-    uint256 currentAmount,
-    uint256 amount
-  ) internal virtual {
-    require(owner != address(0), "ERC20: approve from the zero address");
-    require(spender != address(0), "ERC20: approve from the zero address");
-    require(
-      currentAmount == _allowances[owner][spender],
-      "ERC20: invalid currentAmount"
-    );
-    emit Approval(owner, spender, currentAmount, amount);
-  }
-
-  function removeTokenLock() public onlyOwner {
-    require(_tokenLock == true);
-    _tokenLock = false;
-  }
-
-  //재사용가능하도록 수정
-  function changePersonalTokenLockStatus(address _who) public onlyOwner {
-    if (_personalTokenLock[_who] == true) {
-      _personalTokenLock[_who] = false;
-    } else if (_personalTokenLock[_who] == false) {
-      _personalTokenLock[_who] = true;
-    }
-  }
+  // 이전에 사용하던 방식 (정해진 개수를 민팅해놓고 요건이 충족되면 토큰을 지급해주는 방식)
+  // // address로 이루어진 배열을 받아 각자 할당된 amount만큼 한번에 토큰을 지급하는 함수
+  // function transferMany(address[] calldata toArr, uint256[] calldata amountArr)
+  //   public
+  // {
+  //   for (uint256 i = 0; i < toArr.length; i++) {
+  //     _transfer(msg.sender, toArr[i], amountArr[i]);
+  //     emit Transfer(msg.sender, toArr[i], amountArr[i]);
+  //   }
+  // }
 }

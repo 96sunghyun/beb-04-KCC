@@ -33,8 +33,8 @@ app.use(jwtDecode);
 
 // /* CORS 추가 */
 let corsOptions = {
-  origin: ['http://localhost:3000'],
-  credential: true, 
+  origin: ["http://localhost:3000"],
+  credential: true,
 };
 app.use(cors(corsOptions));
 
