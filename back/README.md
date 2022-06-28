@@ -37,3 +37,9 @@
 ### 3. 생성된 ganache 블록의 contract address를 lib 폴더 sendTokens.js 의 contractAddress 변수에 할당
 
 ### 4. 마찬가지로 lib 폴더 transferToken.js의 contractAddress 변수에 할당
+
+## 로컬 가나슈 환경에서 ERC20, ERC721 구매기능 테스트
+
+### 1. sol 폴더에서 deploy20, deploy721 실행
+
+### 2. 컨트랙트 주소 확인 후 lib 폴더의 ERC20_ADDRESS, ERC721_ADDRESS 파일 내부값을 주소값으로 변경
