@@ -45,6 +45,7 @@ export const write = async (req, res) => {
     user: {
       id: req.state.id,
       address: req.state.address,
+      nickName: req.state.nickName,
     },
   });
   // db에 post 객체를 저장하는 과정
@@ -78,7 +79,7 @@ export const write = async (req, res) => {
     await post.save();
     res.status(200);
     res.send({
-      message: "Serving Successed",
+      message: "Saving Successed",
       postId: post._id,
       // data: {
       //   userId: req.state.id,

@@ -13,6 +13,7 @@ const PostSchema = new Schema({
   user: {
     id: mongoose.Types.ObjectId,
     address: String,
+    nickName: String,
   },
 });
 
