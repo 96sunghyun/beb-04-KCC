@@ -3,12 +3,43 @@ import Navbar from "../components/Navbar";
 import WrapperBasic from "../components/WrapperBasic";
 import WrapperBody from "../components/WrapperBody";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 export default function Post() {
 
-    const [title, setTitle] = useState("title");
-    const [body, setBody] = useState("body is body in body");
+    const [title, setTitle] = useState("");
+    const [body, setBody] = useState("");
+
+    const location = useLocation();
+    console.log(location);
+
+    // (포스트 내용확인) GET http://localhost:4000/content/*
+    axios.defaults.withCredentials = true;
+    const getContent = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/content/' + location.pathname.split("/")[2],
+                {},
+                {
+                    withCredentials: true
+                }
+            );
+
+            console.log(response);
+            setTitle(response.data.title);
+            setBody(response.data.body);
+
+            console.log("Read post success:", response.data);
+        } catch (e) {
+            console.log("Read post fail:", e);
+        }
+    }
+
+    useEffect(() => {
+        getContent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <WrapperBasic>

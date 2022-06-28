@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import jwtDecode from "./lib/jwtDecode";
 import ethFaucet from "./ethFaucet";
 import transfer from "./crypto/index";
+import cors from "cors";
 
 const app = new Express();
 
@@ -30,13 +31,20 @@ app.use(cookieParser());
 // req.cookies에 token이 있다면 자동으로 decode 해주는 middleware 추가
 app.use(jwtDecode);
 
+// /* CORS 추가 */
+let corsOptions = {
+  origin: ["http://localhost:3000"],
+  credential: true,
+};
+app.use(cors(corsOptions));
+
 // 메인페이지
 app.route("/").get(async (req, res) => {
   // db에 있는 모든 content 불러오는 함수
   try {
     const posts = await Post.find().sort({ _id: -1 }).exec();
     console.log(posts);
-    res.json({ posts });
+    res.json({ post: posts });
   } catch (error) {
     res.status(500).send({ error });
   }

@@ -1,9 +1,10 @@
 import Web3 from "web3";
 import User from "../models/user";
 import abi from "../../sol/ERC-20abi";
+import ERC20_ADDRESS from "./ERC20_ADDRESS";
 
 const web3 = new Web3("http://localhost:7545");
-const contractAddress = "0x749aE230a3801b026B07a65a170c2E7F48877459";
+const contractAddress = ERC20_ADDRESS;
 
 const transferToken = async (fromAddr, toAddr, value) => {
   const user = await User.findOne({ address: fromAddr });

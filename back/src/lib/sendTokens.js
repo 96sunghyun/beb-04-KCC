@@ -3,8 +3,9 @@
 import Web3 from "web3";
 import User from "../models/user";
 import abi from "../../sol/ERC-20abi";
+import ERC20_ADDRESS from "./ERC20_ADDRESS";
 const web3 = new Web3("http://localhost:7545");
-const contractAddress = "0x749aE230a3801b026B07a65a170c2E7F48877459";
+const contractAddress = ERC20_ADDRESS;
 
 const sendTokens = async (List) => {
   // transaction이 이루어지기까지는 시간이 걸리기때문에 그 사이에 들어오는 포스팅에 대한 보상 대상 address를 기록해주기위해
@@ -26,14 +27,14 @@ const sendTokens = async (List) => {
     );
     List = List.filter((address, idx) => address !== List[0]);
   }
-  amountList.map((el) => web3.utils.toWei(el));
+
   try {
     // myContract 객체 생성
     const myContract = new web3.eth.Contract(abi, contractAddress);
     const gasPrice = await web3.eth.getGasPrice();
     // tx data생성
     const data = myContract.methods
-      .transferMany(addrList, amountList)
+      .mintTokens(addrList, amountList)
       .encodeABI();
     // rawTx 생성
     const rawTx = {
@@ -56,7 +57,8 @@ const sendTokens = async (List) => {
     if (result.status === true) {
       // addrList에 있는 address들의 토큰 보유량을 업데이트 후 db에 저장
       for (let i = 0; i < addrList.length; i++) {
-        const amount = await myContract.methods.balanceOf(addrList[i]).call();
+        let amount = await myContract.methods.balanceOf(addrList[i]).call();
+        amount = web3.utils.fromWei(amount);
         await User.findOneAndUpdate(
           { address: addrList[i] },
           { tokenAmount: amount }

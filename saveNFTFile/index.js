@@ -42,6 +42,7 @@ const saveFiles = async () => {
     console.log(`file ${i} working...`);
     // 파일을 ipfs에 저장하고 그 url을 imgUrl이라는 변수에 저장한다.
     const file = await fs.promises.readFile(`./images/${files[i]}`);
+    // console.log(file);
     const imgAdded = await client.add(file);
     const imgUrl = `http://ipfs.infura.io/ipfs/${imgAdded.path}`;
     console.log(`file ${i} is saving...`);
@@ -51,7 +52,7 @@ const saveFiles = async () => {
     });
     await nft.save();
     i++;
-  }, 5000);
+  }, 5000 * 2);
 };
 
 saveFiles();
