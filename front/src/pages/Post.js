@@ -44,7 +44,7 @@ export default function Post() {
     return (
         <WrapperBasic>
             <Navbar />
-            <div className="flex flex-col items-center w-full mt-10">
+            <div className="flex flex-col items-center w-full mt-10 h-20">
                 <h1 className="text-4xl font-bold">Post</h1>
             </div>
             <WrapperBody>

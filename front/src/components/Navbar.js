@@ -3,10 +3,9 @@ import Button from './Button';
 
 import axios from "axios"
 
-export default function Navbar({ setAlreadyLogged=()=>{} }) {
+export default function Navbar({ setAlreadyLogged=()=>{}, setAddress=null }) {
 
     const [loggedIn, setLoggedIn] = useState(false);
-    const [address, setAddress] = useState("");
 
     // (로그인 상태확인) GET http://localhost:4000/auth/login
     axios.defaults.withCredentials = true;
@@ -20,7 +19,9 @@ export default function Navbar({ setAlreadyLogged=()=>{} }) {
             );
 
             console.log(response);
-            setAddress(response.data.address);
+            if (setAddress !== null) {
+                setAddress(response.data.address);
+            }
             setLoggedIn(true);
 
             // 상위 컴포넌트에 넘기기 (페이지 자동 이동을 위한)
@@ -28,7 +29,7 @@ export default function Navbar({ setAlreadyLogged=()=>{} }) {
 
             console.log("Auth check success:", response.data.address);
         } catch (e) {
-            console.log("Auth check fail:", e);
+            console.log("🔴 Auth check fail:", e);
             setAlreadyLogged(false)
         }
     }
@@ -47,6 +48,7 @@ export default function Navbar({ setAlreadyLogged=()=>{} }) {
                 {
                     loggedIn ?
                         <>
+                            <Button name="Logout" urlPath="logout" />
                             <Button name="Create Post" urlPath="write" />
                             <Button name="My Page" urlPath="mypage" />
                         </>

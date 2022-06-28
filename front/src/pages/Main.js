@@ -8,6 +8,9 @@ export default function Main() {
     return (
         <WrapperBasic>
             <Navbar />
+            <div className="flex flex-col items-center w-full mt-10 h-20">
+                <h1 className="text-4xl font-bold">Welcome.</h1>
+            </div>
             <WrapperBody>
                 <Details />
             </WrapperBody>
