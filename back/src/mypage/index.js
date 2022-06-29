@@ -12,7 +12,8 @@ mypage.route("/").get(async (req, res) => {
     // owner 보유 NFT 불러오기
     const NFTs = await NFT.find({ ownerAddress: req.state.address });
     // NFT 이미지파일 전송하기
-    const imgFiles = NFTs.map((nft) => Buffer.from(nft.file));
+    // const imgFiles = NFTs.map((nft) => Buffer.from(nft.file));
+    const imgFiles = NFTs.map((nft) => nft.tokenUri);
     res.status(200);
 
     return res.send({ list, imgFiles });
