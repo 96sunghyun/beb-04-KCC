@@ -7,6 +7,7 @@ export default function Details() {
     const [posts, setPosts] = useState(null);
 
     // 전체 Post 가져오기
+    axios.defaults.withCredentials = true;
     const getDetails = async () => {
         const response = await axios.get('http://localhost:4000/', {}, {
             withCredentials: true

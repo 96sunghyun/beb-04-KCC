@@ -9,11 +9,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 export default function Mypage() {
 
     const [alreadyLogged, setAlreadyLogged] = useState(true);
+
     const [myPosts, setMyPosts] = useState([]);
+    const [crypto, setCrypto] = useState(0);
+    const [nfts, setNfts] = useState(null);
+
+    const [address, setAddress] = useState(null);
+    
 
     const navigate = useNavigate();
 
@@ -27,9 +32,10 @@ export default function Mypage() {
 
     useEffect(() => {
         getMypage();
+        getTokenCount();
     }, [])
 
-    // (로그인) GET http://localhost:4000/mypage
+    // (마이페이지) GET http://localhost:4000/mypage
     axios.defaults.withCredentials = true;
     const getMypage = async () => {
         try {
@@ -39,10 +45,30 @@ export default function Mypage() {
                     withCredentials: true
                 }
             );
-            console.log(response);
+            console.log("Response: ", response);
 
             if (response.status === 200) {
-                setMyPosts(response.data);
+                setMyPosts(response.data.list);
+                setNfts(response.data.imgFiles);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    // (크립토 카운트) GET http://localhost:4000/crypto/count
+    const getTokenCount = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/crypto/count',
+                {},
+                {
+                    withCredentials: true
+                }
+            );
+            console.log("Token: ", response);
+
+            if (response.status === 200) {
+                setCrypto(response.data.amount);
             }
         } catch (e) {
             console.log(e);
@@ -51,15 +77,36 @@ export default function Mypage() {
 
     return (
         <WrapperBasic>
-            <Navbar setAlreadyLogged={setAlreadyLogged} />
+            <Navbar setAlreadyLogged={setAlreadyLogged} setAddress={setAddress} />
 
-            <div className="flex flex-col items-center w-full mt-10">
+            <div className="flex flex-col items-center w-full mt-10 h-40">
                 <h1 className="text-4xl font-bold">My Page</h1>
-                <div className="w-1/2 flex justify-center mt-5 -mb-24 space-x-2">
-                    <Button name="Web3 Account" alert={true} alertMsg="Account address goes here!" />
-                    <Button name="My Tokens" alert={true} alertMsg="You have # tokens!" />
+                <div className="w-1/2 flex justify-center mt-5 space-x-2">
+                    <Button name="Web3 Account" alert={true} alertMsg={address} />
+                    <Button name="My Tokens" alert={true} alertMsg={`You have ${crypto} tokens!`} />
+                </div>
+                <div className="w-2/3 flex justify-center mt-2 mb-5">
+                    <Button name="Mint NFT (10 Tokens)" alert={true} alertMsg={'개발중'} />
                 </div>
             </div>
+
+            {
+                nfts && (
+                    <div className="mt-10">
+                        {
+                            nfts.map((n) => {
+                                //const result = await bufferImage.from(n.data)
+                                //const img = new Buffer.from(n.data).toString("base64")
+                                console.log(n.data);
+                                const base64String = btoa(String.fromCharCode(...new Uint8Array(n.data)));
+                                //let base64String = btoa(String.fromCharCode(...new Uint8Array(n)));
+                                return <img src={`data:image/png;base64,${base64String}`} alt="nftImage" key={base64String.slice(0,10)} />
+                            })
+                        }                       
+                    </div>
+                )
+            }
+            
 
             <WrapperBody>
                 <div className="flex flex-col gap-3 py-6 px-4 w-3/4">
@@ -67,7 +114,7 @@ export default function Mypage() {
                         myPosts.map(m =>
                             <PostPreview
                                 title={m.title}
-                                creator={m.user.nickName}
+                                //creator={m.user.nickName}
                                 postId={m._id}
                                 body={m.body}
                                 key={[m.title, m.user, m._id].join("|")}
