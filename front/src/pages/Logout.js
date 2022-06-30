@@ -29,7 +29,7 @@ export default function Logout() {
 
     return (
         <WrapperBasic>
-            <Navbar  />
+            <Navbar resetLogin={true} />
             <div>Logout...</div>
         </WrapperBasic>
         

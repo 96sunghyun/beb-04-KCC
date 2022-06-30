@@ -15,7 +15,7 @@ export default function Mypage() {
 
     const [myPosts, setMyPosts] = useState([]);
     const [crypto, setCrypto] = useState(0);
-    const [nfts, setNfts] = useState(null);
+    const [nfts, setNfts] = useState([]);
 
     const [address, setAddress] = useState(null);
     
@@ -48,8 +48,8 @@ export default function Mypage() {
             console.log("Response: ", response);
 
             if (response.status === 200) {
-                setMyPosts(response.data.list);
-                setNfts(response.data.imgFiles);
+                if (response.data.list !== []) setMyPosts(response.data.list);
+                if (response.data.imgFiles !== []) setNfts(response.data.imgFiles);
             }
         } catch (e) {
             console.log(e);
@@ -91,7 +91,7 @@ export default function Mypage() {
             }
         } catch (e) {
             console.log(e);
-            window.alert("Minting failed...")
+            window.alert("Minting failed... is Ganache connected?")
         }
     }
 
@@ -103,7 +103,7 @@ export default function Mypage() {
                 <h1 className="text-4xl font-bold">My Page</h1>
                 <div className="w-1/2 flex justify-center mt-5 space-x-2">
                     <Button name="Web3 Account" alert={true} alertMsg={address} />
-                    <Button name="My Tokens" alert={true} alertMsg={`You have ${crypto} tokens!`} />
+                    <Button name="My Tokens" alert={true} alertMsg={`You have ${crypto || 0} tokens!`} />
                 </div>
                 <div className="w-2/3 flex justify-center mt-2 mb-5">
                     <Button name="Mint NFT (10 Tokens)" onlyDesign={true} onSubmit={buyNFT} />
@@ -116,8 +116,9 @@ export default function Mypage() {
                     <div className="text-2xl font-semibold mb-8">My NFTs</div>
                         <div className="flex justify-center flex-wrap mb-8 gap-4">
                             {
-                                nfts ? nfts.map((n) => <img src={n} alt={n} className="h-40" />) : <div className="">You don't have any yet. Collect 10 tokens for 1 NFT mint.</div>
-                            }                     
+                                nfts && nfts.map((n) => <img src={n} alt={n} key={n} className="h-40" />)
+                            }
+                            { (nfts.length === 0) && <h3 className="">You don't have any yet. Collect 10 tokens for 1 NFT mint.</h3> }
                         </div> 
                 </WrapperBody> 
             </div>
@@ -133,8 +134,10 @@ export default function Mypage() {
                                 postId={m._id}
                                 body={m.body}
                                 key={[m.title, m.user, m._id].join("|")}
-                            />)
+                            />
+                        )
                     }
+                    { (myPosts.length === 0) && <h3 className="">No posts yet! Start writing to get tokens!</h3> }
                 </div>
 
                 <div className="flex flex-col items-end w-full">

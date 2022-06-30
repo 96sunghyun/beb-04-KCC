@@ -5,7 +5,8 @@ import axios from "axios"
 
 export default function Navbar({
         setAlreadyLogged=()=>{}, setAddress=null,
-        hideSignup=false, hideLogin=false, hideMypage=false, hideWrite=false
+        hideSignup=false, hideLogin=false, hideMypage=false, hideWrite=false,
+        resetLogin=false
     }) {
 
     const [loggedIn, setLoggedIn] = useState(false);
@@ -25,7 +26,9 @@ export default function Navbar({
             if (setAddress !== null) {
                 setAddress(response.data.address);
             }
-            setLoggedIn(true);
+            if (response.status === 200) {
+                setLoggedIn(true);
+            }
 
             // 상위 컴포넌트에 넘기기 (페이지 자동 이동을 위한)
             setAlreadyLogged(true);
@@ -33,14 +36,15 @@ export default function Navbar({
             console.log("Auth check success:", response.data.address);
         } catch (e) {
             console.log("🔴 Auth check fail:", e);
-            setAlreadyLogged(false)
+            setAlreadyLogged(false);
+            setLoggedIn(false);
         }
     }
 
     useEffect(() => {
         getLoginAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [loggedIn])
 
     return (
         <div className="flex justify-between items-center px-12 py-6">
