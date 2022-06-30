@@ -11,6 +11,7 @@ export default function Post() {
 
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
+    const [nickname, setNickname] = useState("");
 
     const location = useLocation();
     console.log(location);
@@ -29,6 +30,7 @@ export default function Post() {
             console.log(response);
             setTitle(response.data.title);
             setBody(response.data.body);
+            setNickname(response.data.user.nickName);
 
             console.log("Read post success:", response.data);
         } catch (e) {
@@ -45,13 +47,13 @@ export default function Post() {
         <WrapperBasic>
             <Navbar />
             <div className="flex flex-col items-center w-full mt-10 h-20">
-                <h1 className="text-4xl font-bold">Post</h1>
+                <h1 className="text-4xl font-bold">Post{ nickname && ` by ${nickname}` }</h1>
             </div>
             <WrapperBody>
                 <div className="text-xl font-bold mb-6">
                     {title}
                 </div>
-                <div>
+                <div className="break-all">
                     {body}
                 </div>
             </WrapperBody>

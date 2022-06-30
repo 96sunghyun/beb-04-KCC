@@ -62,8 +62,8 @@ export default function Write() {
 
     return (
         <WrapperBasic>
-            <Navbar />
-            <div className="flex flex-col items-center w-full mt-10">
+            <Navbar hideWrite={true} />
+            <div className="flex flex-col items-center w-full mt-10 mb-5">
                 <h1 className="text-4xl font-bold">New Post</h1>
             </div>
             <WrapperBody>

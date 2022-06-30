@@ -6,7 +6,7 @@ const style = {
 
 export default function Button({ name="no name", urlPath="#",
                                 isSubmit = false, onSubmit, disabled = false,
-                                alert, alertMsg="no msg" }) {
+                                alert, alertMsg="no msg", onlyDesign=false }) {
     
     // For submitting
     if (isSubmit) {
@@ -21,6 +21,15 @@ export default function Button({ name="no name", urlPath="#",
     if (alert) {
         return (
             <button onClick={()=>window.alert(alertMsg)} className={style.buttonDefault + ` hover:brightness-150`}>
+                {name}
+            </button>
+        )
+    }
+
+    // Just button design
+    if (onlyDesign) { 
+        return (
+            <button onClick={onSubmit} className={style.buttonDefault + ` hover:brightness-150`}>
                 {name}
             </button>
         )
