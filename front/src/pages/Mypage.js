@@ -75,9 +75,29 @@ export default function Mypage() {
         }
     }
 
+    // (NFT 구매) GET http://localhost:4000/crypto/buyNFT
+    const buyNFT = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/crypto/buyNFT',
+                {},
+                {
+                    withCredentials: true
+                }
+            );
+            console.log("NFT: ", response);
+
+            if (response.status === 200) {
+                window.alert('NFT purchased! #', response.data.data.NFTid)
+            }
+        } catch (e) {
+            console.log(e);
+            window.alert("Minting failed...")
+        }
+    }
+
     return (
         <WrapperBasic>
-            <Navbar setAlreadyLogged={setAlreadyLogged} setAddress={setAddress} />
+            <Navbar setAlreadyLogged={setAlreadyLogged} setAddress={setAddress} hideMypage={true} />
 
             <div className="flex flex-col items-center w-full mt-10 h-40">
                 <h1 className="text-4xl font-bold">My Page</h1>
@@ -86,26 +106,21 @@ export default function Mypage() {
                     <Button name="My Tokens" alert={true} alertMsg={`You have ${crypto} tokens!`} />
                 </div>
                 <div className="w-2/3 flex justify-center mt-2 mb-5">
-                    <Button name="Mint NFT (10 Tokens)" alert={true} alertMsg={'개발중'} />
+                    <Button name="Mint NFT (10 Tokens)" onlyDesign={true} onSubmit={buyNFT} />
                 </div>
             </div>
 
-            {
-                nfts && (
-                    <div className="mt-10">
-                        {
-                            nfts.map((n) => {
-                                //const result = await bufferImage.from(n.data)
-                                //const img = new Buffer.from(n.data).toString("base64")
-                                console.log(n.data);
-                                const base64String = btoa(String.fromCharCode(...new Uint8Array(n.data)));
-                                //let base64String = btoa(String.fromCharCode(...new Uint8Array(n)));
-                                return <img src={`data:image/png;base64,${base64String}`} alt="nftImage" key={base64String.slice(0,10)} />
-                            })
-                        }                       
-                    </div>
-                )
-            }
+            
+            <div className="my-10">
+                <WrapperBody>
+                    <div className="text-2xl font-semibold mb-8">My NFTs</div>
+                        <div className="flex justify-center flex-wrap mb-8 gap-4">
+                            {
+                                nfts ? nfts.map((n) => <img src={n} alt={n} className="h-40" />) : <div className="">You don't have any yet. Collect 10 tokens for 1 NFT mint.</div>
+                            }                     
+                        </div> 
+                </WrapperBody> 
+            </div>
             
 
             <WrapperBody>
@@ -114,7 +129,7 @@ export default function Mypage() {
                         myPosts.map(m =>
                             <PostPreview
                                 title={m.title}
-                                //creator={m.user.nickName}
+                                creator={m.user.nickName}
                                 postId={m._id}
                                 body={m.body}
                                 key={[m.title, m.user, m._id].join("|")}
@@ -124,8 +139,8 @@ export default function Mypage() {
 
                 <div className="flex flex-col items-end w-full">
                     <div className="w-1/2 flex justify-center mt-6 -mb-24 space-x-2">
-                        <Button name="Back to list" urlPath="" />
-                        <Button name="New Post" urlPath="write" />
+                        <Button name="To list" urlPath="" />
+                        <Button name="Write" urlPath="write" />
                     </div>
                 </div>
             </WrapperBody>

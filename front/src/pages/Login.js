@@ -72,7 +72,7 @@ export default function Login() {
 
     return (
         <WrapperBasic>
-            <Navbar setAlreadyLogged={setAlreadyLogged} />
+            <Navbar setAlreadyLogged={setAlreadyLogged} hideLogin={true} />
             <WrapperBody>
                 <div className="flex flex-col items-center space-y-6 w-full my-4">
                     <div className="flex flex-col space-y-2 justify-center items-center">

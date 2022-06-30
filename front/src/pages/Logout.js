@@ -2,6 +2,8 @@ import axios from "axios"
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import WrapperBasic from "../components/WrapperBasic";
 
 export default function Logout() {
     const navigate = useNavigate();
@@ -26,6 +28,10 @@ export default function Logout() {
     }
 
     return (
-        <div>Logout...</div>
+        <WrapperBasic>
+            <Navbar  />
+            <div>Logout...</div>
+        </WrapperBasic>
+        
     )
 }

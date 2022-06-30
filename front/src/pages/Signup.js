@@ -6,88 +6,87 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Message from "../components/Message";
 
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { registerUser } from "../../../_actions/user_actions";
+import axios from "axios"
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Signup(props) {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+const DEFAULT_BUTTON_TEXT = "Fill Data";
 
-  const [Email, setEmail] = useState("");
-  const [Name, setName] = useState("");
-  const [Password, setPassword] = useState("");
-  const [ConfirmPassword, setConfirmPassword] = useState("");
+export default function Signup() {
 
-  const onEmailHandler = (event) => {
-    setEmail(event.currentTarget.value);
-  };
+    // Signup POST failed?
+    const [fail, setFail] = useState(false);
 
-  const onNameHandler = (event) => {
-    setName(event.currentTarget.value);
-  };
+    const [alreadyLogged, setAlreadyLogged] = useState(false);
 
-  const onPasswordHandler = (event) => {
-    setPassword(event.currentTarget.value);
-  };
+    const [buttonText, setButtonText] = useState(DEFAULT_BUTTON_TEXT)
+    const [disabled, setDisabled] = useState(true);
 
-  const onConfirmPasswordHandler = (event) => {
-    setConfirmPassword(event.currentTarget.value);
-  };
+    const [nickname, setNickname] = useState("");
+    const [email, setEmail] = useState("");
+    const [pw, setPw] = useState("");
 
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
+    const navigate = useNavigate();
 
-    if (Password !== ConfirmPassword) {
-      return alert("비밀번호와 비밀번호 확인은 같아야 합니다.");
+    useEffect(() => {
+        if (nickname && email && pw) {
+            setDisabled(false);
+            setButtonText("Submit");
+        } else {
+            setDisabled(true);
+            setButtonText(DEFAULT_BUTTON_TEXT);
+        }
+    }, [nickname, email, pw])
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        console.log(nickname, email, pw);
+        postSignup(nickname, email, pw);
     }
 
-    let body = {
-      email: Email,
-      password: Password,
-      userName: Name,
-    };
-    dispatch(registerUser(body)).then((response) => {
-      if (response.payload.success) {
-        alert("회원가입이 완료되었습니다.");
-        navigate("/login");
-      } else {
-        alert("회원가입 중 오류가 발생했습니다.");
-      }
-    });
-  };
+    // 이미 로그인 상태라면 마이페이지로 자동 이동
+    useEffect(() => {
+        if (alreadyLogged === true) navigate(`/mypage`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [alreadyLogged]);
 
-  return (
-    <WrapperBasic>
-      <Navbar backButton={true} />
-      <WrapperBody>
-        <div className="flex flex-col items-center space-y-6 w-full my-4">
-          <div className="flex flex-col space-y-2 w-1/2 m-auto justify-center items-end">
-            <Input inputName="Name" value={Name} onChange={onNameHandler} />
-            <Input inputName="ID" value={Email} onChange={onEmailHandler} />
-            <Input
-              inputName="PW"
-              value={Password}
-              onChange={onPasswordHandler}
-            />
-            <Input
-              inputName="ConfirmPW"
-              value={ConfirmPassword}
-              onChange={onConfirmPasswordHandler}
-            />
-          </div>
-          <Button
-            name={buttonText}
-            isSubmit={true}
-            onSubmit={onSubmitHandler}
-            disabled={disabled}
-          />
-          {fail ? <Message /> : null}
-        </div>
-      </WrapperBody>
-      <Footer />
-    </WrapperBasic>
-  );
+    // (회원가입) POST http://localhost:4000/auth/login
+    axios.defaults.withCredentials = true;
+    const postSignup = async (nickname, email, pw) => {
+        const response = await axios.post('http://localhost:4000/auth/register',
+            {
+                nickName: nickname,
+                email,
+                password: pw
+            },
+            {
+                withCredentials: true
+            }
+        );
+        console.log(response);
+
+        if (response.status === 200) {
+            // window.alert('Login Success!');
+            navigate(`/mypage`);
+        }
+    }
+
+    return (
+        <WrapperBasic>
+            <Navbar setAlreadyLogged={setAlreadyLogged} hideSignup={true} />
+            <WrapperBody>
+                <div className="flex flex-col items-center space-y-6 w-full my-4">
+                    <div className="flex flex-col space-y-2 justify-center items-center">
+                        <Input inputName="Nickname" value={nickname} onChange={setNickname} />
+                        <Input inputName="Email" value={email} onChange={setEmail} />
+                        <Input inputName="PW" value={pw} onChange={setPw} />
+                    </div>
+                    <Button name={buttonText} isSubmit={true} onSubmit={onSubmit} disabled={disabled} />
+                    { fail ? <Message m="Signup failed." /> : null }
+                </div>
+            </WrapperBody>
+            <Footer />
+        </WrapperBasic>
+    )
 }
-export default Signup;

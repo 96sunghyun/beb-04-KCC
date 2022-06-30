@@ -3,7 +3,10 @@ import Button from './Button';
 
 import axios from "axios"
 
-export default function Navbar({ setAlreadyLogged=()=>{}, setAddress=null }) {
+export default function Navbar({
+        setAlreadyLogged=()=>{}, setAddress=null,
+        hideSignup=false, hideLogin=false, hideMypage=false, hideWrite=false
+    }) {
 
     const [loggedIn, setLoggedIn] = useState(false);
 
@@ -44,18 +47,18 @@ export default function Navbar({ setAlreadyLogged=()=>{}, setAddress=null }) {
             <div>
                 <Button name="🏠" urlPath="" />
             </div>
-            <div className="flex justify-end items center gap-6">
+            <div className="flex justify-end items center gap-3 sm:gap-6">
                 {
                     loggedIn ?
                         <>
                             <Button name="Logout" urlPath="logout" />
-                            <Button name="Create Post" urlPath="write" />
-                            <Button name="My Page" urlPath="mypage" />
+                            { !hideWrite && <Button name="Write" urlPath="write" /> }
+                            { !hideMypage && <Button name="My Page" urlPath="mypage" /> }
                         </>
                         :
                         <>
-                            <Button name="Login" urlPath="login" />
-                            <Button name="Join Us" urlPath="signup" />
+                            { !hideLogin && <Button name="Login" urlPath="login" /> }
+                            { !hideSignup && <Button name="Join Us" urlPath="signup" /> }
                         </>
                 }
             </div>
