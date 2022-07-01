@@ -40,9 +40,10 @@ app.use(cors(corsOptions));
 app.route("/").get(async (req, res) => {
   // db에 있는 모든 content 불러오는 함수
   try {
-    const posts = await Post.find().sort({ _id: -1 }).exec();
+    return res.send("Hi!");
+    // const posts = await Post.find().sort({ _id: -1 }).exec();
 
-    res.json({ post: posts });
+    // res.json({ post: posts });
   } catch (error) {
     res.status(500).send({ error });
   }
