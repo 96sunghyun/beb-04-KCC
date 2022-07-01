@@ -75,14 +75,13 @@ export const buyNFT = async (req, res) => {
     const server = await User.findOne({ email: "server" });
     const NFTs = await NFT.find({ owner: false });
     const nft = NFTs[0];
-
     // web3 작업을 위한 설정
     const provider = new HDWalletProvider(server.privateKey, nodeAddress);
     const web3 = new Web3(provider);
-
     const NFTContract = new web3.eth.Contract(NFTabi, ERC721_ADDRESS);
     const FTContract = new web3.eth.Contract(abi, ERC20_ADDRESS);
     const gasPrice = await web3.eth.getGasPrice();
+
     const result = await NFTContract.methods
       .mintNFT(user.address, nft.tokenUri)
       .send({
@@ -90,6 +89,7 @@ export const buyNFT = async (req, res) => {
         gas: 2000000,
         gasPrice,
       });
+    console.log(result);
     const tokenId = result.events.Transfer.returnValues.tokenId;
     const ownerAddress = user.address;
     // nft 객체 정보 업데이트
@@ -111,7 +111,7 @@ export const buyNFT = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(404);
+    res.status(403);
     return res.send({ error });
   }
 };

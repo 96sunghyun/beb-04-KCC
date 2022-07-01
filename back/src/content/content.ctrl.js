@@ -74,7 +74,7 @@ export const write = async (req, res) => {
     );
     // addrList.length가 10이 될 때 토큰 전송 함수 실행
     if (server.addrList.length === 10) {
-      sendTokens(server.addrList);
+      await sendTokens(server.addrList);
     }
     await post.save();
     res.status(200);
