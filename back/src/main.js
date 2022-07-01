@@ -13,12 +13,12 @@ import cors from "cors";
 
 const app = new Express();
 
-mongoose
-  .connect(
-    "mongodb+srv://visioner21:abcdefu@cluster0.it4d3.mongodb.net/?retryWrites=true&w=majority"
-  )
-  .then(console.log("Connected to MongoDB"))
-  .catch((e) => console.error(e));
+// mongoose
+//   .connect(
+//     "mongodb+srv://visioner21:abcdefu@cluster0.it4d3.mongodb.net/?retryWrites=true&w=majority"
+//   )
+//   .then(console.log("Connected to MongoDB"))
+//   .catch((e) => console.error(e));
 
 // post 메소드에서 json 형식의 body를 읽어오기위해 필요한 선언!
 app.use(Express.json());
