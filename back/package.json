@@ -76,8 +76,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -r esm src",
-    "heroku-postbuild": "npm run build"
+    "start": "nodemon -r esm src"
   },
   "author": "",
   "license": "ISC"
