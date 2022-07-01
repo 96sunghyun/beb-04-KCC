@@ -13,10 +13,10 @@ import cors from "cors";
 
 const app = new Express();
 
-const { MONGO_URI } = process.env;
-
 mongoose
-  .connect(MONGO_URI)
+  .connect(
+    "mongodb+srv://visioner21:abcdefu@cluster0.it4d3.mongodb.net/?retryWrites=true&w=majority"
+  )
   .then(console.log("Connected to MongoDB"))
   .catch((e) => console.error(e));
 
