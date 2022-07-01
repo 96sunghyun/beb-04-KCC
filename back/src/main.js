@@ -13,12 +13,14 @@ import cors from "cors";
 
 const app = new Express();
 
-// mongoose
-//   .connect(
-//     "mongodb+srv://visioner21:abcdefu@cluster0.it4d3.mongodb.net/?retryWrites=true&w=majority"
-//   )
-//   .then(console.log("Connected to MongoDB"))
-//   .catch((e) => console.error(e));
+const { PORT, MONGO_URI } = process.env;
+
+const port = PORT || 4000;
+
+mongoose
+  .connect(MONGO_URI)
+  .then(console.log("Connected to MongoDB"))
+  .catch((e) => console.error(e));
 
 // post 메소드에서 json 형식의 body를 읽어오기위해 필요한 선언!
 app.use(Express.json());
@@ -40,10 +42,9 @@ app.use(cors(corsOptions));
 app.route("/").get(async (req, res) => {
   // db에 있는 모든 content 불러오는 함수
   try {
-    return res.send("Hi!");
-    // const posts = await Post.find().sort({ _id: -1 }).exec();
+    const posts = await Post.find().sort({ _id: -1 }).exec();
 
-    // res.json({ post: posts });
+    res.json({ post: posts });
   } catch (error) {
     res.status(500).send({ error });
   }
@@ -64,6 +65,6 @@ app.use("/ethFaucet", ethFaucet);
 // user의 token 관련 요청 경로
 app.use("/crypto", transfer);
 
-app.listen(process.env.PORT || 4000, () => {
+app.listen(port, () => {
   console.log(`port 4000 opened...`);
 });

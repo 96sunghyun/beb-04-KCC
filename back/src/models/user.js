@@ -64,7 +64,7 @@ userSchema.methods.generateToken = function () {
   //jsonwebtoken을 이용해서 token생상하기
   const token = jwt.sign(
     { id: user._id, address: user.address, nickName: user.nickName },
-    process.env.JWT_SECRET,
+    "6a497cb738ec350fc275baeef13b1c10c950a30a33ac87678ada2a282ce50464660e2a97287bba33073621f14a1449f692fedb3a39a182fbf867ad695a13f414",
     {
       expiresIn: "1d",
     }
