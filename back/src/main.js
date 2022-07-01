@@ -13,9 +13,7 @@ import cors from "cors";
 
 const app = new Express();
 
-const { PORT, MONGO_URI } = process.env;
-
-const port = PORT || 4000;
+const { MONGO_URI } = process.env;
 
 mongoose
   .connect(MONGO_URI)
@@ -65,6 +63,6 @@ app.use("/ethFaucet", ethFaucet);
 // user의 token 관련 요청 경로
 app.use("/crypto", transfer);
 
-app.listen(port, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log(`port 4000 opened...`);
 });
